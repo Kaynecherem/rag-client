@@ -1,5 +1,4 @@
 const API_BASE = "https://d28pes0iok9s89.cloudfront.net/api/v1";
-
 async function request(path: string, options: RequestInit = {}) {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
