@@ -5,13 +5,14 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import {
-  Shield, Search, FileText, FolderOpen, LogOut,
+  Shield, Search, FileText, FolderOpen, History, LogOut,
 } from "lucide-react";
 
 const navItems = [
   { href: "/staff/query", label: "Ask Questions", icon: Search },
   { href: "/staff/policies", label: "Policies", icon: FileText },
   { href: "/staff/communications", label: "Communications", icon: FolderOpen },
+  { href: "/staff/history", label: "Query History", icon: History },
 ];
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
@@ -71,7 +72,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto bg-gray-50">{children}</main>
     </div>
   );
 }

@@ -1,10 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth-context";
+import { useState, useRef, useEffect } from "react";
 import { queryPolicy } from "@/lib/api";
-import { Shield, Send, Loader2, BookOpen, LogOut } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { Send, Shield, Loader2, BookOpen } from "lucide-react";
+
+const SUGGESTED_QUESTIONS = [
+  "What are my coverage limits?",
+  "What is my deductible?",
+  "What exclusions apply to my policy?",
+  "How do I file a claim?",
+  "What is my policy effective date?",
+];
 
 interface Citation {
   page: number | null;
@@ -27,46 +34,28 @@ interface Message {
   result?: QueryResult;
 }
 
-const SUGGESTED_QUESTIONS = [
-  "What are my coverage limits?",
-  "What is my deductible?",
-  "What perils are covered?",
-  "Is flood damage covered?",
-  "How do I file a claim?",
-  "What is my liability coverage?",
-];
-
 export default function PolicyholderPage() {
-  const { isAuthenticated, isPolicyholder, policyNumber, logout } = useAuth();
-  const router = useRouter();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { policyNumber } = useAuth();
   const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isAuthenticated || !isPolicyholder) {
-      router.replace("/auth");
-    }
-  }, [isAuthenticated, isPolicyholder, router]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  if (!isPolicyholder || !policyNumber) return null;
+  const handleSubmit = async (overrideQuestion?: string) => {
+    const q = overrideQuestion || question.trim();
+    if (!q || loading || !policyNumber) return;
 
-  const handleSubmit = async (q?: string) => {
-    const text = q || question;
-    if (!text.trim() || loading) return;
-
-    const userMsg: Message = { id: Date.now().toString(), type: "user", text };
+    const userMsg: Message = { id: Date.now().toString(), type: "user", text: q };
     setMessages((prev) => [...prev, userMsg]);
-    setQuestion("");
+    if (!overrideQuestion) setQuestion("");
     setLoading(true);
 
     try {
-      const result = await queryPolicy(policyNumber, text);
+      const result = await queryPolicy(policyNumber, q);
       setMessages((prev) => [
         ...prev,
         {
@@ -82,7 +71,7 @@ export default function PolicyholderPage() {
         {
           id: (Date.now() + 1).toString(),
           type: "assistant",
-          text: `I'm sorry, I encountered an error: ${err.message}. Please try again.`,
+          text: `Sorry, I encountered an error: ${err.message}. Please try again.`,
         },
       ]);
     } finally {
@@ -96,28 +85,7 @@ export default function PolicyholderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <div className="font-semibold text-sm text-gray-900">Policy Assistant</div>
-              <div className="text-xs text-gray-500">Policy: {policyNumber}</div>
-            </div>
-          </div>
-          <button
-            onClick={() => { logout(); router.push("/auth"); }}
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition"
-          >
-            <LogOut className="w-4 h-4" /> Sign Out
-          </button>
-        </div>
-      </header>
-
+    <div className="flex flex-col" style={{ height: "calc(100vh - 57px)" }}>
       {/* Chat area */}
       <div className="flex-1 overflow-auto">
         <div className="max-w-3xl mx-auto px-4 py-6">
@@ -134,7 +102,6 @@ export default function PolicyholderPage() {
                 All answers are sourced directly from your policy document.
               </p>
 
-              {/* Suggested questions */}
               <div className="mt-6 flex flex-wrap gap-2 justify-center max-w-lg mx-auto">
                 {SUGGESTED_QUESTIONS.map((sq) => (
                   <button
@@ -183,6 +150,13 @@ export default function PolicyholderPage() {
                               </div>
                             ))}
                           </div>
+                        </div>
+                      )}
+
+                      {msg.result && (
+                        <div className="mt-2 flex items-center gap-3 text-xs text-gray-400">
+                          <span>{(msg.result.confidence * 100).toFixed(0)}% confidence</span>
+                          <span>{msg.result.latency_ms}ms</span>
                         </div>
                       )}
                     </div>
