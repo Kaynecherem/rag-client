@@ -112,3 +112,72 @@ export async function queryCommunications(
     }),
   });
 }
+// ── Batch Upload ────────────────────────────────────────────────────────
+
+export async function uploadPoliciesBatch(
+  files: File[],
+  policyNumbers: string[]
+) {
+  const formData = new FormData();
+  files.forEach((file) => formData.append("files", file));
+  formData.append("policy_numbers", policyNumbers.join(","));
+  return request("/policies/upload-batch", { method: "POST", body: formData });
+}
+
+export async function uploadCommunicationsBatch(
+  files: File[],
+  communicationType: string,
+  titles?: string[]
+) {
+  const formData = new FormData();
+  files.forEach((file) => formData.append("files", file));
+  formData.append("communication_type", communicationType);
+  if (titles && titles.length > 0) {
+    formData.append("titles", titles.join(","));
+  }
+  return request("/communications/upload-batch", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+// ── Query History ───────────────────────────────────────────────────────
+
+export async function getStaffQueryHistory(params?: {
+  page?: number;
+  page_size?: number;
+  user_type?: string;
+  document_type?: string;
+  policy_number?: string;
+  search?: string;
+}) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", String(params.page));
+  if (params?.page_size) searchParams.set("page_size", String(params.page_size));
+  if (params?.user_type) searchParams.set("user_type", params.user_type);
+  if (params?.document_type)
+    searchParams.set("document_type", params.document_type);
+  if (params?.policy_number)
+    searchParams.set("policy_number", params.policy_number);
+  if (params?.search) searchParams.set("search", params.search);
+
+  const qs = searchParams.toString();
+  return request(`/history/staff${qs ? `?${qs}` : ""}`);
+}
+
+export async function getStaffQueryStats() {
+  return request("/history/staff/stats");
+}
+
+export async function getQueryDetail(queryId: string) {
+  return request(`/history/staff/${queryId}`);
+}
+
+export async function getPolicyholderQueryHistory(
+  page = 1,
+  pageSize = 25
+) {
+  return request(
+    `/history/policyholder?page=${page}&page_size=${pageSize}`
+  );
+}
