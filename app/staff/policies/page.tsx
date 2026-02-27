@@ -262,19 +262,18 @@ export default function PoliciesPage() {
               />
             </div>
           </div>
-          <div className="mt-3 flex items-end">
+          <div className="mt-3">
             <button
               type="submit"
               disabled={uploadLoading}
               className="w-full sm:w-auto bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
-              >
-                {uploadLoading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
-                ) : (
-                  <><Upload className="w-4 h-4" /> Upload & Index</>
-                )}
-              </button>
-            </div>
+            >
+              {uploadLoading ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+              ) : (
+                <><Upload className="w-4 h-4" /> Upload & Index</>
+              )}
+            </button>
           </div>
         </form>
       )}
