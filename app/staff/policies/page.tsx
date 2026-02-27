@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   uploadPolicy, deletePolicy, checkPolicyAvailable,
   searchPolicies, uploadPoliciesBatch,
 } from "@/lib/api";
 import {
   Upload, Trash2, CheckCircle, XCircle, Loader2, FileText,
-  Search, X, ChevronDown, ChevronUp, Plus, Minus,
+  Search, X, Plus, Minus, MessageSquare,
 } from "lucide-react";
 
 interface PolicyInfo {
@@ -32,6 +33,7 @@ interface BatchResult {
 }
 
 export default function PoliciesPage() {
+  const router = useRouter();
   const [policies, setPolicies] = useState<PolicyInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadLoading, setUploadLoading] = useState(false);
@@ -53,7 +55,6 @@ export default function PoliciesPage() {
   const [batchResults, setBatchResults] = useState<BatchResult[]>([]);
   const batchFileRef = useRef<HTMLInputElement>(null);
 
-  // Load policies
   const fetchPolicies = useCallback(async () => {
     setLoading(true);
     try {
@@ -68,7 +69,6 @@ export default function PoliciesPage() {
       setPolicies(items);
       setSearchResults(items);
     } catch {
-      // Fallback to known policies
       const knownPolicies = ["POL-2024-HO-001", "POL-2024-AU-002", "POL-2024-CGL-003"];
       const items = await Promise.all(
         knownPolicies.map(async (num) => {
@@ -92,12 +92,10 @@ export default function PoliciesPage() {
   // Debounced search
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
-
     if (!searchQuery.trim()) {
       setSearchResults(policies);
       return;
     }
-
     searchTimeout.current = setTimeout(async () => {
       setSearchLoading(true);
       try {
@@ -112,7 +110,6 @@ export default function PoliciesPage() {
           }))
         );
       } catch {
-        // Filter locally as fallback
         setSearchResults(
           policies.filter((p) =>
             p.number.toLowerCase().includes(searchQuery.toLowerCase())
@@ -124,15 +121,12 @@ export default function PoliciesPage() {
     }, 300);
   }, [searchQuery, policies]);
 
-  // Single upload
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     const file = fileRef.current?.files?.[0];
     if (!file || !policyNumber) return;
-
     setUploadLoading(true);
     setMessage(null);
-
     try {
       const result = await uploadPolicy(file, policyNumber);
       setMessage({ type: "success", text: `Policy ${policyNumber} uploaded (${result.status})` });
@@ -146,18 +140,11 @@ export default function PoliciesPage() {
     }
   };
 
-  // Batch upload
-  const handleBatchAdd = () => {
-    batchFileRef.current?.click();
-  };
+  const handleBatchAdd = () => batchFileRef.current?.click();
 
   const handleBatchFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const newEntries: BatchFileEntry[] = files.map((f) => ({
-      file: f,
-      policyNumber: "",
-    }));
-    setBatchFiles((prev) => [...prev, ...newEntries].slice(0, 10));
+    setBatchFiles((prev) => [...prev, ...files.map((f) => ({ file: f, policyNumber: "" }))].slice(0, 10));
     if (batchFileRef.current) batchFileRef.current.value = "";
   };
 
@@ -167,15 +154,14 @@ export default function PoliciesPage() {
       setMessage({ type: "error", text: "Please enter a policy number for each file" });
       return;
     }
-
     setUploadLoading(true);
     setMessage(null);
     setBatchResults([]);
-
     try {
-      const files = batchFiles.map((f) => f.file);
-      const numbers = batchFiles.map((f) => f.policyNumber);
-      const result = await uploadPoliciesBatch(files, numbers);
+      const result = await uploadPoliciesBatch(
+        batchFiles.map((f) => f.file),
+        batchFiles.map((f) => f.policyNumber)
+      );
       setBatchResults(result.results || []);
       const success = (result.results || []).filter((r: any) => r.status === "indexed").length;
       setMessage({ type: "success", text: `${success}/${batchFiles.length} policies uploaded` });
@@ -209,9 +195,7 @@ export default function PoliciesPage() {
         <button
           onClick={() => setUploadMode("single")}
           className={`px-3 py-1.5 text-sm rounded-lg transition ${
-            uploadMode === "single"
-              ? "bg-brand-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            uploadMode === "single" ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
           Single Upload
@@ -219,9 +203,7 @@ export default function PoliciesPage() {
         <button
           onClick={() => setUploadMode("batch")}
           className={`px-3 py-1.5 text-sm rounded-lg transition ${
-            uploadMode === "batch"
-              ? "bg-brand-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            uploadMode === "batch" ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
           Batch Upload
@@ -279,81 +261,39 @@ export default function PoliciesPage() {
           <h2 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
             <Upload className="w-5 h-5 text-brand-600" /> Batch Upload (up to 10)
           </h2>
-          <input
-            ref={batchFileRef}
-            type="file"
-            accept=".pdf"
-            multiple
-            className="hidden"
-            onChange={handleBatchFilesSelected}
-          />
-          <button
-            onClick={handleBatchAdd}
-            disabled={batchFiles.length >= 10}
-            className="mb-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition flex items-center gap-2 disabled:opacity-50"
-          >
+          <input ref={batchFileRef} type="file" accept=".pdf" multiple className="hidden" onChange={handleBatchFilesSelected} />
+          <button onClick={handleBatchAdd} disabled={batchFiles.length >= 10}
+            className="mb-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition flex items-center gap-2 disabled:opacity-50">
             <Plus className="w-4 h-4" /> Add PDF Files
           </button>
-
           {batchFiles.length > 0 && (
             <div className="space-y-2 mb-4">
               {batchFiles.map((entry, i) => (
                 <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-gray-50 rounded-lg p-3">
-                  <span className="text-sm text-gray-600 truncate flex-shrink-0 max-w-[200px]">
-                    {entry.file.name}
-                  </span>
-                  <input
-                    type="text"
-                    value={entry.policyNumber}
-                    onChange={(e) => {
-                      const updated = [...batchFiles];
-                      updated[i].policyNumber = e.target.value;
-                      setBatchFiles(updated);
-                    }}
+                  <span className="text-sm text-gray-600 truncate flex-shrink-0 max-w-[200px]">{entry.file.name}</span>
+                  <input type="text" value={entry.policyNumber}
+                    onChange={(e) => { const u = [...batchFiles]; u[i].policyNumber = e.target.value; setBatchFiles(u); }}
                     placeholder="Policy number"
-                    className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none w-full sm:w-auto"
-                  />
-                  <button
-                    onClick={() => setBatchFiles((prev) => prev.filter((_, idx) => idx !== i))}
-                    className="text-gray-400 hover:text-red-500 transition flex-shrink-0"
-                  >
+                    className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none w-full sm:w-auto" />
+                  <button onClick={() => setBatchFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="text-gray-400 hover:text-red-500 transition flex-shrink-0">
                     <Minus className="w-4 h-4" />
                   </button>
                 </div>
               ))}
             </div>
           )}
-
           {batchFiles.length > 0 && (
-            <button
-              onClick={handleBatchUpload}
-              disabled={uploadLoading}
-              className="w-full sm:w-auto bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
-            >
-              {uploadLoading ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
-              ) : (
-                <><Upload className="w-4 h-4" /> Upload All ({batchFiles.length})</>
-              )}
+            <button onClick={handleBatchUpload} disabled={uploadLoading}
+              className="w-full sm:w-auto bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
+              {uploadLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload All ({batchFiles.length})</>}
             </button>
           )}
-
-          {/* Batch results */}
           {batchResults.length > 0 && (
             <div className="mt-4 space-y-2">
               {batchResults.map((r, i) => (
-                <div
-                  key={i}
-                  className={`text-sm px-3 py-2 rounded-lg ${
-                    r.status === "indexed"
-                      ? "bg-green-50 text-green-700"
-                      : "bg-red-50 text-red-700"
-                  }`}
-                >
-                  <span className="font-medium">{r.policy_number}:</span>{" "}
-                  {r.status === "indexed"
-                    ? `${r.chunk_count} chunks indexed`
-                    : r.error || "Failed"}
+                <div key={i} className={`text-sm px-3 py-2 rounded-lg ${r.status === "indexed" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                  <span className="font-medium">{r.policy_number}:</span> {r.status === "indexed" ? `${r.chunk_count} chunks indexed` : r.error || "Failed"}
                 </div>
               ))}
             </div>
@@ -363,13 +303,7 @@ export default function PoliciesPage() {
 
       {/* Message */}
       {message && (
-        <div
-          className={`mt-4 p-3 rounded-lg text-sm ${
-            message.type === "success"
-              ? "bg-green-50 border border-green-200 text-green-700"
-              : "bg-red-50 border border-red-200 text-red-700"
-          }`}
-        >
+        <div className={`mt-4 p-3 rounded-lg text-sm ${message.type === "success" ? "bg-green-50 border border-green-200 text-green-700" : "bg-red-50 border border-red-200 text-red-700"}`}>
           {message.text}
         </div>
       )}
@@ -382,42 +316,28 @@ export default function PoliciesPage() {
         </div>
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by policy number..."
-            className="w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
-          />
+            className="w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none" />
           {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
               <X className="w-4 h-4" />
             </button>
           )}
-          {searchLoading && (
-            <Loader2 className="absolute right-8 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-500 animate-spin" />
-          )}
+          {searchLoading && <Loader2 className="absolute right-8 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-500 animate-spin" />}
         </div>
 
         {/* Policy list */}
         <div className="space-y-2">
           {loading ? (
-            <div className="text-center py-8">
-              <Loader2 className="w-6 h-6 text-brand-500 animate-spin mx-auto" />
-            </div>
+            <div className="text-center py-8"><Loader2 className="w-6 h-6 text-brand-500 animate-spin mx-auto" /></div>
           ) : searchResults.length === 0 ? (
             <p className="text-sm text-gray-400 py-4 text-center">
               {searchQuery ? "No policies match your search" : "No policies found"}
             </p>
           ) : (
             searchResults.map((p) => (
-              <div
-                key={p.number}
-                className="bg-white border border-gray-200 rounded-xl px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between"
-              >
+              <div key={p.number} className="bg-white border border-gray-200 rounded-xl px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3 min-w-0">
                   <FileText className="w-5 h-5 text-gray-400 flex-shrink-0" />
                   <div className="min-w-0">
@@ -428,15 +348,24 @@ export default function PoliciesPage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                   {p.available ? (
                     <CheckCircle className="w-5 h-5 text-green-500" />
                   ) : (
                     <XCircle className="w-5 h-5 text-gray-300" />
                   )}
+                  {p.available && (
+                    <button
+                      onClick={() => router.push(`/staff/query?policy=${encodeURIComponent(p.number)}`)}
+                      className="text-gray-400 hover:text-brand-600 transition p-1"
+                      title="Ask questions about this policy"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDelete(p.number)}
-                    className="text-gray-400 hover:text-red-500 transition"
+                    className="text-gray-400 hover:text-red-500 transition p-1"
                     title="Delete policy"
                   >
                     <Trash2 className="w-4 h-4" />
