@@ -40,6 +40,7 @@ export default function PoliciesPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [policyNumber, setPolicyNumber] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const [useFilenameAsPolicy, setUseFilenameAsPolicy] = useState(false);
 
   // Search
   const [searchQuery, setSearchQuery] = useState("");
@@ -131,6 +132,7 @@ export default function PoliciesPage() {
       const result = await uploadPolicy(file, policyNumber);
       setMessage({ type: "success", text: `Policy ${policyNumber} uploaded (${result.status})` });
       setPolicyNumber("");
+      setUseFilenameAsPolicy(false);
       if (fileRef.current) fileRef.current.value = "";
       fetchPolicies();
     } catch (err: any) {
@@ -216,13 +218,29 @@ export default function PoliciesPage() {
           <h2 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
             <Upload className="w-5 h-5 text-brand-600" /> Upload New Policy
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Policy Number</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700">Policy Number</label>
+                <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={useFilenameAsPolicy}
+                    onChange={(e) => {
+                      setUseFilenameAsPolicy(e.target.checked);
+                      if (e.target.checked && fileRef.current?.files?.[0]) {
+                        setPolicyNumber(fileRef.current.files[0].name.replace(/\.[^/.]+$/, ""));
+                      }
+                    }}
+                    className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                  />
+                  Use filename
+                </label>
+              </div>
               <input
                 type="text"
                 value={policyNumber}
-                onChange={(e) => setPolicyNumber(e.target.value)}
+                onChange={(e) => { setPolicyNumber(e.target.value); setUseFilenameAsPolicy(false); }}
                 placeholder="e.g. POL-2024-HO-004"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
@@ -235,14 +253,20 @@ export default function PoliciesPage() {
                 type="file"
                 accept=".pdf"
                 required
+                onChange={() => {
+                  if (useFilenameAsPolicy && fileRef.current?.files?.[0]) {
+                    setPolicyNumber(fileRef.current.files[0].name.replace(/\.[^/.]+$/, ""));
+                  }
+                }}
                 className="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
               />
             </div>
-            <div className="flex items-end">
-              <button
-                type="submit"
-                disabled={uploadLoading}
-                className="w-full bg-brand-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+          </div>
+          <div className="mt-3 flex items-end">
+            <button
+              type="submit"
+              disabled={uploadLoading}
+              className="w-full sm:w-auto bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
               >
                 {uploadLoading ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
