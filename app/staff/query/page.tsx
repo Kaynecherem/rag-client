@@ -66,6 +66,8 @@ export default function StaffQueryPage() {
   // Load policies
   useEffect(() => {
     const loadPolicies = async () => {
+      // Read URL param directly to avoid race condition with state
+      const urlPolicy = searchParams.get("policy");
       try {
         const data = await searchPolicies("", 1, 100);
         const opts: PolicyOption[] = (data.policies || [])
@@ -75,8 +77,8 @@ export default function StaffQueryPage() {
             label: `${p.policy_number}${p.filename ? ` (${p.filename})` : ""}`,
           }));
         setPolicyOptions(opts);
-        // Set default if none selected
-        if (!policyNumber && opts.length > 0) {
+        // Only set default if no URL param and no current selection
+        if (!urlPolicy && !policyNumber && opts.length > 0) {
           setPolicyNumber(opts[0].number);
         }
       } catch {
@@ -87,11 +89,11 @@ export default function StaffQueryPage() {
           { number: "POL-2024-CGL-003", label: "POL-2024-CGL-003 (CGL)" },
         ];
         setPolicyOptions(fallback);
-        if (!policyNumber) setPolicyNumber(fallback[0].number);
+        if (!urlPolicy && !policyNumber) setPolicyNumber(fallback[0].number);
       }
     };
     loadPolicies();
-  }, []);
+  }, [searchParams]);
 
   // Debounced policy search
   useEffect(() => {
@@ -170,8 +172,8 @@ export default function StaffQueryPage() {
 
   return (
     <div className="h-[100dvh] sm:h-screen flex flex-col overflow-hidden">
-      {/* Header — scrollable on mobile if needed, but contained */}
-      <div className="bg-white border-b px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0 overflow-x-auto">
+      {/* Header */}
+      <div className="bg-white border-b px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0 relative z-10">
         <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Ask Questions</h1>
         <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
           Query policies or agency communications with AI-powered search
