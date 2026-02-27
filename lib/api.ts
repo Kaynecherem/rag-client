@@ -181,3 +181,37 @@ export async function getPolicyholderQueryHistory(
     `/history/policyholder?page=${page}&page_size=${pageSize}`
   );
 }
+
+// ── Policy Search & Download ─────────────────────────────────────────
+
+export async function searchPolicies(q: string = "", page = 1, pageSize = 20) {
+  return request(`/policies/search?q=${encodeURIComponent(q)}&page=${page}&page_size=${pageSize}`);
+}
+
+export async function downloadPolicy(policyNumber: string): Promise<Blob> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_BASE}/policies/${policyNumber}/download`, { headers });
+  if (!res.ok) throw new Error("Failed to download policy");
+  return res.blob();
+}
+
+export async function getPolicyText(policyNumber: string) {
+  return request(`/policies/${policyNumber}/text`);
+}
+
+// ── Communication Search ────────────────────────────────────────────
+
+export async function searchCommunications(
+  search: string = "",
+  communicationType?: string,
+  page = 1,
+  pageSize = 20
+) {
+  const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+  if (search) params.set("search", search);
+  if (communicationType) params.set("communication_type", communicationType);
+  return request(`/communications?${params.toString()}`);
+}
