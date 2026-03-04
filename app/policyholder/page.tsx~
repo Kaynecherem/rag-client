@@ -5,9 +5,8 @@ import { queryPolicy, downloadPolicy, getPolicyText } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import {
   Send, Shield, Loader2, BookOpen, Download,
-  FileText, X,
+  FileText, X, ChevronDown,
 } from "lucide-react";
-import DisclaimerModal from "@/components/DisclaimerModal";
 
 const SUGGESTED_QUESTIONS = [
   "What are my coverage limits?",
@@ -51,29 +50,11 @@ export default function PolicyholderPage() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Disclaimer
-  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
-
   // Policy viewer
   const [showPolicyViewer, setShowPolicyViewer] = useState(false);
   const [policyText, setPolicyText] = useState<PolicySection[]>([]);
   const [policyLoading, setPolicyLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
-
-  // Check disclaimer on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const accepted = sessionStorage.getItem("disclaimer_accepted");
-      if (accepted === "true") setDisclaimerAccepted(true);
-    }
-  }, []);
-
-  const handleDisclaimerAccept = () => {
-    setDisclaimerAccepted(true);
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("disclaimer_accepted", "true");
-    }
-  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -142,40 +123,33 @@ export default function PolicyholderPage() {
     }
   };
 
-  // Show disclaimer if not accepted
-  if (!disclaimerAccepted) {
-    return <DisclaimerModal onAccept={handleDisclaimerAccept} />;
-  }
-
   return (
     <div className="flex flex-col" style={{ height: "calc(100vh - 57px)" }}>
-      {/* Policy Actions Bar — aligned with content padding */}
-      <div className="bg-white border-b">
-        <div className="max-w-3xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-end gap-2">
-          <button
-            onClick={handleViewPolicy}
-            disabled={policyLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
-          >
-            {policyLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
-            {showPolicyViewer ? "Close" : "Read Policy"}
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={downloading}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
-          >
-            {downloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-            Download PDF
-          </button>
-        </div>
+      {/* Policy Actions Bar */}
+      <div className="bg-white border-b px-4 py-2 flex items-center justify-end gap-2">
+        <button
+          onClick={handleViewPolicy}
+          disabled={policyLoading}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
+        >
+          {policyLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
+          {showPolicyViewer ? "Close" : "Read Policy"}
+        </button>
+        <button
+          onClick={handleDownload}
+          disabled={downloading}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
+        >
+          {downloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+          Download PDF
+        </button>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
         {/* Chat Area */}
         <div className={`flex-1 flex flex-col overflow-hidden ${showPolicyViewer ? "hidden sm:flex" : ""}`}>
-          <div className="flex-1 overflow-y-auto overflow-x-hidden">
-            <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6">
+          <div className="flex-1 overflow-auto">
+            <div className="max-w-3xl mx-auto px-4 py-6">
               {messages.length === 0 && (
                 <div className="text-center py-8 sm:py-12">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -205,13 +179,13 @@ export default function PolicyholderPage() {
                 {messages.map((msg) => (
                   <div key={msg.id} className={`animate-fade-in ${msg.type === "user" ? "flex justify-end" : ""}`}>
                     {msg.type === "user" ? (
-                      <div className="bg-brand-600 text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[85%] sm:max-w-md text-sm break-words">
+                      <div className="bg-brand-600 text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[85%] sm:max-w-md text-sm">
                         {msg.text}
                       </div>
                     ) : (
                       <div className="max-w-[95%] sm:max-w-xl">
                         <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4 shadow-sm">
-                          <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed break-words">
+                          <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
                             {msg.text}
                           </div>
                           {msg.result && msg.result.citations.length > 0 && (
@@ -230,7 +204,12 @@ export default function PolicyholderPage() {
                               </div>
                             </div>
                           )}
-                          {/* No confidence shown to policyholders — kept for staff only */}
+                          {msg.result && (
+                            <div className="mt-2 flex items-center gap-3 text-xs text-gray-400">
+                              <span>{(msg.result.confidence * 100).toFixed(0)}% confidence</span>
+                              <span>{msg.result.latency_ms}ms</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -250,7 +229,7 @@ export default function PolicyholderPage() {
             </div>
           </div>
 
-          {/* Input — aligned with content */}
+          {/* Input */}
           <div className="bg-white border-t">
             <div className="max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
               <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="flex gap-2 sm:gap-3">
@@ -260,17 +239,17 @@ export default function PolicyholderPage() {
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="Ask about your policy..."
                   disabled={loading}
-                  className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm disabled:opacity-50"
+                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={loading || !question.trim()}
-                  className="bg-brand-600 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl hover:bg-brand-700 disabled:opacity-50 transition flex-shrink-0"
+                  className="bg-brand-600 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl hover:bg-brand-700 disabled:opacity-50 transition"
                 >
                   <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </form>
-              <p className="text-xs text-gray-400 mt-2 text-center">
+              <p className="text-xs text-gray-400 mt-2 text-center hidden sm:block">
                 Answers are generated from your policy document. Always verify with your agent for important decisions.
               </p>
             </div>
