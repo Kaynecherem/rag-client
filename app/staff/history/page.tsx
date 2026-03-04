@@ -158,7 +158,7 @@ export default function StaffHistoryPage() {
   const hasFilters = userTypeFilter || docTypeFilter || policyFilter || searchText;
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="p-4 sm:p-6 max-w-6xl">
       <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
         <History className="w-5 h-5" /> Query History
       </h1>
@@ -272,49 +272,54 @@ export default function StaffHistoryPage() {
         ) : (
           <div className="space-y-2">
             {queries.map((q) => (
-              <div key={q.id} className="bg-white rounded-xl border border-gray-200">
+              <div key={q.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <button
                   onClick={() => openDetail(q.id)}
-                  className="w-full text-left px-5 py-4 flex items-start gap-4 hover:bg-gray-50 transition rounded-xl"
+                  className="w-full text-left px-4 sm:px-5 py-3 sm:py-4 hover:bg-gray-50 transition"
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900 line-clamp-1">
-                      {q.question}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900 line-clamp-1 break-words">
+                        {q.question}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1 line-clamp-1 break-words">
+                        {q.answer_preview}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1 line-clamp-1">
-                      {q.answer_preview}
-                    </div>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
-                      <span className={`px-2 py-0.5 rounded-full font-medium ${
-                        q.user_type === "staff"
-                          ? "bg-blue-50 text-blue-700"
-                          : "bg-green-50 text-green-700"
-                      }`}>
-                        {q.user_type}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <span className="text-xs text-gray-400 hidden sm:inline">
+                        {new Date(q.queried_at).toLocaleDateString()} {new Date(q.queried_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
-                      <span>{q.user_identifier}</span>
-                      {q.policy_number && <span>Policy: {q.policy_number}</span>}
-                      {q.document_type && (
-                        <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-                          {q.document_type}
-                        </span>
+                      <span className="text-xs text-gray-400 sm:hidden">
+                        {new Date(q.queried_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                      </span>
+                      {selectedId === q.id ? (
+                        <ChevronUp className="w-4 h-4 text-gray-400" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
                       )}
-                      <span>{q.citation_count} citations</span>
-                      {q.confidence != null && (
-                        <span>{(q.confidence * 100).toFixed(0)}% conf</span>
-                      )}
-                      <span>{q.latency_ms}ms</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-xs text-gray-400">
-                      {new Date(q.queried_at).toLocaleDateString()} {new Date(q.queried_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-gray-400">
+                    <span className={`px-2 py-0.5 rounded-full font-medium ${
+                      q.user_type === "staff"
+                        ? "bg-blue-50 text-blue-700"
+                        : "bg-green-50 text-green-700"
+                    }`}>
+                      {q.user_type}
                     </span>
-                    {selectedId === q.id ? (
-                      <ChevronUp className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <span className="truncate max-w-[120px] sm:max-w-none">{q.user_identifier}</span>
+                    {q.policy_number && <span className="hidden sm:inline">Policy: {q.policy_number}</span>}
+                    {q.document_type && (
+                      <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                        {q.document_type}
+                      </span>
                     )}
+                    <span className="hidden sm:inline">{q.citation_count} citations</span>
+                    {q.confidence != null && (
+                      <span>{(q.confidence * 100).toFixed(0)}% conf</span>
+                    )}
+                    <span className="hidden sm:inline">{q.latency_ms}ms</span>
                   </div>
                 </button>
 

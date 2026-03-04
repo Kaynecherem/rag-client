@@ -173,6 +173,11 @@ export async function getQueryDetail(queryId: string) {
   return request(`/history/staff/${queryId}`);
 }
 
+// Policyholder: get full detail for one of their own past queries
+export async function getPolicyholderQueryDetail(queryId: string) {
+  return request(`/history/policyholder/${queryId}`);
+}
+
 export async function getPolicyholderQueryHistory(
   page = 1,
   pageSize = 25
