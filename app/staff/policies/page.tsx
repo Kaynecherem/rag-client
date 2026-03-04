@@ -54,6 +54,7 @@ export default function PoliciesPage() {
   // Batch
   const [batchFiles, setBatchFiles] = useState<BatchFileEntry[]>([]);
   const [batchResults, setBatchResults] = useState<BatchResult[]>([]);
+  const [useBatchFilenames, setUseBatchFilenames] = useState(true);
   const batchFileRef = useRef<HTMLInputElement>(null);
 
   const fetchPolicies = useCallback(async () => {
@@ -146,7 +147,13 @@ export default function PoliciesPage() {
 
   const handleBatchFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setBatchFiles((prev) => [...prev, ...files.map((f) => ({ file: f, policyNumber: "" }))].slice(0, 10));
+    setBatchFiles((prev) => [
+      ...prev,
+      ...files.map((f) => ({
+        file: f,
+        policyNumber: useBatchFilenames ? f.name.replace(/\.[^/.]+$/, "") : "",
+      })),
+    ].slice(0, 10));
     if (batchFileRef.current) batchFileRef.current.value = "";
   };
 
@@ -285,17 +292,36 @@ export default function PoliciesPage() {
             <Upload className="w-5 h-5 text-brand-600" /> Batch Upload (up to 10)
           </h2>
           <input ref={batchFileRef} type="file" accept=".pdf" multiple className="hidden" onChange={handleBatchFilesSelected} />
-          <button onClick={handleBatchAdd} disabled={batchFiles.length >= 10}
-            className="mb-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition flex items-center gap-2 disabled:opacity-50">
-            <Plus className="w-4 h-4" /> Add PDF Files
-          </button>
+          <div className="flex items-center justify-between mb-3">
+            <button onClick={handleBatchAdd} disabled={batchFiles.length >= 10}
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition flex items-center gap-2 disabled:opacity-50">
+              <Plus className="w-4 h-4" /> Add PDF Files
+            </button>
+            <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={useBatchFilenames}
+                onChange={(e) => {
+                  setUseBatchFilenames(e.target.checked);
+                  if (e.target.checked) {
+                    setBatchFiles((prev) => prev.map((f) => ({
+                      ...f,
+                      policyNumber: f.file.name.replace(/\.[^/.]+$/, ""),
+                    })));
+                  }
+                }}
+                className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+              />
+              Use filenames as policy numbers
+            </label>
+          </div>
           {batchFiles.length > 0 && (
             <div className="space-y-2 mb-4">
               {batchFiles.map((entry, i) => (
                 <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-gray-50 rounded-lg p-3">
                   <span className="text-sm text-gray-600 truncate flex-shrink-0 max-w-[200px]">{entry.file.name}</span>
                   <input type="text" value={entry.policyNumber}
-                    onChange={(e) => { const u = [...batchFiles]; u[i].policyNumber = e.target.value; setBatchFiles(u); }}
+                    onChange={(e) => { const u = [...batchFiles]; u[i].policyNumber = e.target.value; setBatchFiles(u); setUseBatchFilenames(false); }}
                     placeholder="Policy number"
                     className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none w-full sm:w-auto" />
                   <button onClick={() => setBatchFiles((prev) => prev.filter((_, idx) => idx !== i))}
