@@ -58,13 +58,13 @@ export default function AuthPage() {
     try {
       const data = await verifyPolicyholder({
         tenant_id: tid,
-        policy_number: policyNumber,
+        policy_number: policyNumber.trim(),
         last_name: verifyBy === "person" ? lastName : undefined,
         company_name: verifyBy === "company" ? companyName : undefined,
       });
 
       if (data.verified && data.token) {
-        loginPolicyholder(data.token, tid, policyNumber);
+        loginPolicyholder(data.token, tid, policyNumber.trim());
         router.push("/policyholder");
       } else {
         setError("Verification failed. Check your details and try again.");
