@@ -12,17 +12,23 @@ const navItems = [
 ];
 
 export default function PolicyholderLayout({ children }: { children: React.ReactNode }) {
-  const { isPolicyholder, isAuthenticated, logout, policyNumber } = useAuth();
+  const { isPolicyholder, isAuthenticated, logout, policyNumber, hydrated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isAuthenticated || !isPolicyholder) {
+    if (hydrated && (!isAuthenticated || !isPolicyholder)) {
       router.replace("/auth");
     }
-  }, [isAuthenticated, isPolicyholder, router]);
+  }, [hydrated, isAuthenticated, isPolicyholder, router]);
 
-  if (!isPolicyholder) return null;
+  if (!hydrated || !isPolicyholder) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

@@ -6,7 +6,7 @@ interface AuthState {
   token: string | null;
   tenantId: string | null;
   role: "admin" | "staff" | "policyholder" | null;
-  policyNumber: string | null; // For policyholders
+  policyNumber: string | null;
   email: string | null;
 }
 
@@ -17,6 +17,7 @@ interface AuthContextType extends AuthState {
   isStaff: boolean;
   isPolicyholder: boolean;
   isAuthenticated: boolean;
+  hydrated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     policyNumber: null,
     email: null,
   });
+  const [hydrated, setHydrated] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -40,10 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("auth");
       }
     }
+    setHydrated(true);
   }, []);
 
-  // Save to localStorage on change
+  // Save to localStorage on change (only after hydration)
   useEffect(() => {
+    if (!hydrated) return;
     if (auth.token) {
       localStorage.setItem("auth", JSON.stringify(auth));
       localStorage.setItem("token", auth.token);
@@ -51,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem("auth");
       localStorage.removeItem("token");
     }
-  }, [auth]);
+  }, [auth, hydrated]);
 
   const loginStaff = (token: string, tenantId: string, role: string, email: string) => {
     setAuth({ token, tenantId, role: role as "admin" | "staff", policyNumber: null, email });
@@ -75,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isStaff: auth.role === "admin" || auth.role === "staff",
         isPolicyholder: auth.role === "policyholder",
         isAuthenticated: !!auth.token,
+        hydrated,
       }}
     >
       {children}

@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 export default function Home() {
-  const { isAuthenticated, isStaff } = useAuth();
+  const { isAuthenticated, isStaff, hydrated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (!hydrated) return;
     if (!isAuthenticated) {
       router.replace("/auth");
     } else if (isStaff) {
@@ -16,7 +17,7 @@ export default function Home() {
     } else {
       router.replace("/policyholder");
     }
-  }, [isAuthenticated, isStaff, router]);
+  }, [hydrated, isAuthenticated, isStaff, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

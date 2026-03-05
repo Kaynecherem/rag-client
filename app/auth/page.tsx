@@ -41,7 +41,6 @@ export default function AuthPage() {
     setLoading(true);
     setError("");
 
-    // If no tenant ID yet, get one from test-setup
     let tid = tenantId;
     if (!tid) {
       try {
@@ -56,15 +55,16 @@ export default function AuthPage() {
     }
 
     try {
+      const cleanPolicyNumber = policyNumber.trim();
       const data = await verifyPolicyholder({
         tenant_id: tid,
-        policy_number: policyNumber.trim(),
-        last_name: verifyBy === "person" ? lastName : undefined,
-        company_name: verifyBy === "company" ? companyName : undefined,
+        policy_number: cleanPolicyNumber,
+        last_name: verifyBy === "person" ? lastName.trim() : undefined,
+        company_name: verifyBy === "company" ? companyName.trim() : undefined,
       });
 
       if (data.verified && data.token) {
-        loginPolicyholder(data.token, tid, policyNumber.trim());
+        loginPolicyholder(data.token, tid, data.policy_number || cleanPolicyNumber);
         router.push("/policyholder");
       } else {
         setError("Verification failed. Check your details and try again.");
@@ -115,7 +115,6 @@ export default function AuthPage() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl p-6">
           {mode === "staff" ? (
-            /* Staff Login */
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-2">Staff Login</h2>
               <p className="text-sm text-gray-500 mb-6">
@@ -133,7 +132,6 @@ export default function AuthPage() {
               </p>
             </div>
           ) : (
-            /* Policyholder Verification */
             <form onSubmit={handlePolicyholderVerify}>
               <h2 className="text-lg font-semibold text-gray-900 mb-2">
                 Verify Your Identity
@@ -157,7 +155,6 @@ export default function AuthPage() {
                   />
                 </div>
 
-                {/* Verify by toggle */}
                 <div className="flex gap-2">
                   <button
                     type="button"

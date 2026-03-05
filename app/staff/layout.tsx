@@ -16,23 +16,28 @@ const navItems = [
 ];
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
-  const { isStaff, isAuthenticated, logout, email } = useAuth();
+  const { isStaff, isAuthenticated, logout, email, hydrated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated || !isStaff) {
+    if (hydrated && (!isAuthenticated || !isStaff)) {
       router.replace("/auth");
     }
-  }, [isAuthenticated, isStaff, router]);
+  }, [hydrated, isAuthenticated, isStaff, router]);
 
-  // Close menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  if (!isStaff) return null;
+  if (!hydrated || !isStaff) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
