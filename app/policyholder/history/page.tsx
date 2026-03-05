@@ -7,6 +7,7 @@ import {
   History, Loader2, FolderOpen, ChevronDown, ChevronUp,
   MessageSquare,
 } from "lucide-react";
+import MarkdownResponse from "@/components/MarkdownResponse";
 
 interface QueryItem {
   id: string;
@@ -121,13 +122,20 @@ export default function PolicyholderHistoryPage() {
 
                 {expandedId === q.id && (
                   <div className="border-t border-gray-100 px-4 sm:px-5 py-3 sm:py-4">
-                    <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
-                      {q.answer_preview}
-                    </p>
+                    <div className="text-sm text-gray-800 break-words">
+                      <MarkdownResponse content={q.answer_preview} />
+                    </div>
                     <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-gray-400">
                       <span>{q.citation_count} citations</span>
                       {q.latency_ms != null && <span>{q.latency_ms}ms</span>}
                     </div>
+                    <button
+                      onClick={() => handleScrollToQuery(q.id)}
+                      className="mt-3 flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 font-medium transition"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      View in conversation
+                    </button>
                   </div>
                 )}
               </div>

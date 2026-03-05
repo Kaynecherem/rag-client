@@ -21,6 +21,7 @@ import {
   X,
   MessageSquare,
 } from "lucide-react";
+import MarkdownResponse from "@/components/MarkdownResponse";
 
 interface QueryItem {
   id: string;
@@ -337,7 +338,7 @@ export default function StaffHistoryPage() {
                       <div className="space-y-4">
                         <div>
                           <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Answer</h4>
-                          <p className="text-sm text-gray-800 whitespace-pre-wrap">{detail.answer}</p>
+                          <p className="text-sm text-gray-800"><MarkdownResponse content={detail.answer} /></p>
                         </div>
                         {detail.citations && detail.citations.length > 0 && (
                           <div>

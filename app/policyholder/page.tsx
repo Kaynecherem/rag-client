@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { queryPolicy, downloadPolicy, getPolicyText, getPolicyholderQueryHistory } from "@/lib/api";
+import { queryPolicy, downloadPolicy, getPolicyText, getPolicyholderConversation } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import {
   Send, Shield, Loader2, BookOpen, Download,
@@ -39,6 +39,7 @@ interface Message {
   type: "user" | "assistant";
   text: string;
   result?: QueryResult;
+  queryId?: string;
 }
 
 interface PolicySection {
@@ -53,7 +54,11 @@ export default function PolicyholderPage() {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [conversationLoading, setConversationLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollTargetRef = useRef<string | null>(null);
+  const messageRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const conversationLoaded = useRef(false);
 
   // Disclaimer + Tutorial
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
@@ -77,6 +82,12 @@ export default function PolicyholderPage() {
     }
   }, []);
 
+  // Read scroll target from URL
+  useEffect(() => {
+    const scrollTo = searchParams.get("scroll_to");
+    if (scrollTo) scrollTargetRef.current = scrollTo;
+  }, [searchParams]);
+
   const handleDisclaimerAccept = () => {
     setDisclaimerAccepted(true);
     if (typeof window !== "undefined") {
@@ -93,48 +104,64 @@ export default function PolicyholderPage() {
     }
   };
 
-  // Reopen full conversation history when coming from history page
+  // Load full conversation on mount — always, not just from history
   useEffect(() => {
-    const reopenHistory = searchParams.get("history");
-    if (reopenHistory !== "true" || !disclaimerAccepted) return;
+    if (!disclaimerAccepted || !policyNumber || conversationLoaded.current) return;
 
     (async () => {
+      setConversationLoading(true);
       try {
-        // Load all past queries for this policyholder (most recent page)
-        const data = await getPolicyholderQueryHistory(1, 50);
-        if (data.queries && data.queries.length > 0) {
-          // Build messages from all queries, oldest first
-          const allMessages: Message[] = [];
-          const sorted = [...data.queries].reverse(); // oldest first
-          for (const q of sorted) {
-            allMessages.push({
-              id: `${q.id}-q`,
-              type: "user",
-              text: q.question,
-            });
-            allMessages.push({
-              id: `${q.id}-a`,
-              type: "assistant",
-              text: q.answer_preview,
-              result: {
-                answer: q.answer_preview,
-                citations: [],
-                confidence: q.confidence || 0,
-                latency_ms: q.latency_ms || 0,
-              },
-            });
-          }
-          setMessages(allMessages);
+        const data = await getPolicyholderConversation();
+        const msgs: Message[] = [];
+        for (const q of data.queries || []) {
+          msgs.push({
+            id: `${q.id}-q`,
+            type: "user",
+            text: q.question,
+            queryId: q.id,
+          });
+          msgs.push({
+            id: `${q.id}-a`,
+            type: "assistant",
+            text: q.answer || "",
+            queryId: q.id,
+            result: {
+              answer: q.answer || "",
+              citations: q.citations || [],
+              confidence: q.confidence || 0,
+              latency_ms: q.latency_ms || 0,
+            },
+          });
         }
+        setMessages(msgs);
+        conversationLoaded.current = true;
       } catch {
-        // Start fresh if can't load history
+        conversationLoaded.current = true;
+      } finally {
+        setConversationLoading(false);
       }
     })();
-  }, [searchParams, disclaimerAccepted]);
+  }, [disclaimerAccepted, policyNumber]);
 
+  // Scroll to target or bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+    if (conversationLoading) return;
+
+    const target = scrollTargetRef.current;
+    if (target) {
+      const el = messageRefs.current[target];
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.classList.add("ring-2", "ring-brand-400", "ring-offset-2");
+          setTimeout(() => el.classList.remove("ring-2", "ring-brand-400", "ring-offset-2"), 2000);
+        }, 100);
+        scrollTargetRef.current = null;
+      }
+    } else if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, conversationLoading]);
 
   const handleSubmit = async (overrideQuestion?: string) => {
     const q = overrideQuestion || question.trim();
@@ -235,7 +262,13 @@ export default function PolicyholderPage() {
           <div className={`flex-1 flex flex-col overflow-hidden ${showPolicyViewer ? "hidden sm:flex" : ""}`}>
             <div className="flex-1 overflow-y-auto overflow-x-hidden">
               <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6">
-                {messages.length === 0 && (
+                {conversationLoading && (
+                  <div className="flex items-center justify-center py-8 text-gray-400">
+                    <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading your conversation...
+                  </div>
+                )}
+
+                {!conversationLoading && messages.length === 0 && (
                   <div className="text-center py-8 sm:py-12">
                     <div className="w-14 h-14 sm:w-16 sm:h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                       <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-brand-600" />
@@ -262,7 +295,11 @@ export default function PolicyholderPage() {
 
                 <div className="space-y-4">
                   {messages.map((msg) => (
-                    <div key={msg.id} className={`animate-fade-in ${msg.type === "user" ? "flex justify-end" : ""}`}>
+                    <div
+                      key={msg.id}
+                      ref={(el) => { if (msg.queryId) messageRefs.current[msg.queryId] = el; }}
+                      className={`animate-fade-in transition-all duration-300 rounded-xl ${msg.type === "user" ? "flex justify-end" : ""}`}
+                    >
                       {msg.type === "user" ? (
                         <div className="bg-brand-600 text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[85%] sm:max-w-md text-sm break-words">
                           {msg.text}
