@@ -40,7 +40,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen flex flex-col sm:flex-row">
+    <div className="h-screen flex flex-col sm:flex-row overflow-hidden">
       {/* Mobile Header */}
       <div className="sm:hidden bg-brand-800 text-white flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">

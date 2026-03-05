@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   getStaffQueryHistory,
   getStaffQueryStats,
@@ -18,6 +19,7 @@ import {
   Clock,
   BarChart3,
   X,
+  MessageSquare,
 } from "lucide-react";
 
 interface QueryItem {
@@ -62,6 +64,7 @@ interface Stats {
 }
 
 export default function StaffHistoryPage() {
+  const router = useRouter();
   const [queries, setQueries] = useState<QueryItem[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [total, setTotal] = useState(0);
@@ -302,11 +305,11 @@ export default function StaffHistoryPage() {
                   </div>
                   <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-gray-400">
                     <span className={`px-2 py-0.5 rounded-full font-medium ${
-                      q.user_type === "staff"
+                      q.user_type === "staff" || q.user_type === "admin"
                         ? "bg-blue-50 text-blue-700"
                         : "bg-green-50 text-green-700"
                     }`}>
-                      {q.user_type}
+                      {q.user_type === "admin" ? "staff" : q.user_type}
                     </span>
                     <span className="truncate max-w-[120px] sm:max-w-none">{q.user_identifier}</span>
                     {q.policy_number && <span className="hidden sm:inline">Policy: {q.policy_number}</span>}
@@ -357,6 +360,15 @@ export default function StaffHistoryPage() {
                               ))}
                             </div>
                           </div>
+                        )}
+                        {detail.policy_number && (detail.user_type === "admin" || detail.user_type === "staff") && (
+                          <button
+                            onClick={() => router.push(`/staff/query?policy=${detail.policy_number}`)}
+                            className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 font-medium transition mt-2"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            Continue this conversation
+                          </button>
                         )}
                       </div>
                     ) : (
