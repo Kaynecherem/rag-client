@@ -47,7 +47,11 @@ export default function PolicyholderHistoryPage() {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   const handleContinueConversation = () => {
-    router.push("/policyholder?history=true");
+    router.push("/policyholder");
+  };
+
+  const handleScrollToQuery = (queryId: string) => {
+    router.push(`/policyholder?scroll_to=${queryId}`);
   };
 
   return (
