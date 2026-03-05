@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { queryPolicy, queryCommunications, searchPolicies, getStaffConversation } from "@/lib/api";
 import { Send, FileText, FolderOpen, Loader2, BookOpen, Search, ChevronDown, Shield } from "lucide-react";
+import MarkdownResponse from "@/components/MarkdownResponse";
 
 interface Citation {
   page: number | null;
@@ -403,8 +404,8 @@ export default function StaffQueryPage() {
               ) : (
                 <div className="max-w-[95%] sm:max-w-xl">
                   <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4 shadow-sm">
-                    <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed break-words">
-                      {msg.text}
+                    <div className="text-sm text-gray-800 leading-relaxed break-words">
+                      <MarkdownResponse content={msg.text} />
                     </div>
 
                     {msg.result && msg.result.citations.length > 0 && (

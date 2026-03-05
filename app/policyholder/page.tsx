@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import DisclaimerModal from "@/components/DisclaimerModal";
 import TutorialOverlay from "@/components/TutorialOverlay";
+import MarkdownResponse from "@/components/MarkdownResponse";
 
 const SUGGESTED_QUESTIONS = [
   "What are my coverage limits?",
@@ -269,8 +270,8 @@ export default function PolicyholderPage() {
                       ) : (
                         <div className="max-w-[95%] sm:max-w-xl">
                           <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4 shadow-sm">
-                            <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed break-words">
-                              {msg.text}
+                            <div className="text-sm text-gray-800 leading-relaxed break-words">
+                              <MarkdownResponse content={msg.text} />
                             </div>
                             {msg.result && msg.result.citations.length > 0 && (
                               <div className="mt-3 pt-3 border-t border-gray-100">
