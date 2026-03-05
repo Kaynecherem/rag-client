@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { queryPolicy, downloadPolicy, getPolicyText, getPolicyholderQueryDetail } from "@/lib/api";
+import { queryPolicy, downloadPolicy, getPolicyText, getPolicyholderQueryHistory } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import {
   Send, Shield, Loader2, BookOpen, Download,
@@ -92,32 +92,41 @@ export default function PolicyholderPage() {
     }
   };
 
-  // Reopen a past conversation from history (via URL ?query_id=xxx)
+  // Reopen full conversation history when coming from history page
   useEffect(() => {
-    const queryId = searchParams.get("query_id");
-    if (!queryId || !disclaimerAccepted) return;
+    const reopenHistory = searchParams.get("history");
+    if (reopenHistory !== "true" || !disclaimerAccepted) return;
 
     (async () => {
       try {
-        const detail = await getPolicyholderQueryDetail(queryId);
-        if (detail && detail.question && detail.answer) {
-          setMessages([
-            { id: `${queryId}-q`, type: "user", text: detail.question },
-            {
-              id: `${queryId}-a`,
+        // Load all past queries for this policyholder (most recent page)
+        const data = await getPolicyholderQueryHistory(1, 50);
+        if (data.queries && data.queries.length > 0) {
+          // Build messages from all queries, oldest first
+          const allMessages: Message[] = [];
+          const sorted = [...data.queries].reverse(); // oldest first
+          for (const q of sorted) {
+            allMessages.push({
+              id: `${q.id}-q`,
+              type: "user",
+              text: q.question,
+            });
+            allMessages.push({
+              id: `${q.id}-a`,
               type: "assistant",
-              text: detail.answer,
+              text: q.answer_preview,
               result: {
-                answer: detail.answer,
-                citations: detail.citations || [],
-                confidence: detail.confidence || 0,
-                latency_ms: detail.latency_ms || 0,
+                answer: q.answer_preview,
+                citations: [],
+                confidence: q.confidence || 0,
+                latency_ms: q.latency_ms || 0,
               },
-            },
-          ]);
+            });
+          }
+          setMessages(allMessages);
         }
       } catch {
-        // Query not found or not accessible
+        // Start fresh if can't load history
       }
     })();
   }, [searchParams, disclaimerAccepted]);

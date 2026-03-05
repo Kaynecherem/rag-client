@@ -45,18 +45,32 @@ export default function PolicyholderHistoryPage() {
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  const handleReopen = (queryId: string) => {
-    router.push(`/policyholder?query_id=${queryId}`);
+  const handleContinueConversation = () => {
+    router.push("/policyholder?history=true");
   };
 
   return (
     <div className="p-4 sm:p-6 max-w-3xl mx-auto">
-      <h1 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center gap-2">
-        <History className="w-5 h-5" /> My Past Questions
-      </h1>
-      <p className="text-sm text-gray-500 mt-1">
-        View your previous questions and the answers you received
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <History className="w-5 h-5" /> My Past Questions
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            View your previous questions and the answers you received
+          </p>
+        </div>
+        {queries.length > 0 && (
+          <button
+            onClick={handleContinueConversation}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition font-medium"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Continue Conversation</span>
+            <span className="sm:hidden">Continue</span>
+          </button>
+        )}
+      </div>
 
       <div className="mt-6">
         {loading ? (
@@ -113,15 +127,7 @@ export default function PolicyholderHistoryPage() {
                     <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-gray-400">
                       <span>{q.citation_count} citations</span>
                       {q.latency_ms != null && <span>{q.latency_ms}ms</span>}
-                      {/* No confidence shown to policyholders */}
                     </div>
-                    <button
-                      onClick={() => handleReopen(q.id)}
-                      className="mt-3 flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 font-medium transition"
-                    >
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      Continue this conversation
-                    </button>
                   </div>
                 )}
               </div>

@@ -363,7 +363,7 @@ export default function StaffHistoryPage() {
                         )}
                         {detail.policy_number && (detail.user_type === "admin" || detail.user_type === "staff") && (
                           <button
-                            onClick={() => router.push(`/staff/query?policy=${detail.policy_number}`)}
+                            onClick={() => router.push(`/staff/query?policy=${detail.policy_number}&scroll_to=${detail.id}`)}
                             className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 font-medium transition mt-2"
                           >
                             <MessageSquare className="w-3.5 h-3.5" />

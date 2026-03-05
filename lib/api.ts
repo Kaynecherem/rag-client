@@ -220,3 +220,13 @@ export async function searchCommunications(
   if (communicationType) params.set("communication_type", communicationType);
   return request(`/communications?${params.toString()}`);
 }
+
+// Staff: Get full conversation history for a specific policy (current user only)
+export async function getStaffConversation(policyNumber: string) {
+  return request(`/history/staff/conversation/${encodeURIComponent(policyNumber)}`);
+}
+
+// Policyholder: Get full conversation history for their policy
+export async function getPolicyholderConversation() {
+  return request("/history/policyholder/conversation");
+}
