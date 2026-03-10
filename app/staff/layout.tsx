@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import NotificationBanner from "@/components/NotificationBanner";
+import UsageIndicator from "@/components/UsageIndicator";
+import SuspendedScreen from "@/components/SuspendedScreen";
+import { getTenantStatus } from "@/lib/api";
 import {
   Shield, Search, FileText, FolderOpen, History, LogOut, Menu, X,
 } from "lucide-react";
@@ -20,6 +24,7 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [suspended, setSuspended] = useState(false);
 
   useEffect(() => {
     if (hydrated && (!isAuthenticated || !isStaff)) {
@@ -28,105 +33,127 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
   }, [hydrated, isAuthenticated, isStaff, router]);
 
   useEffect(() => {
+    if (hydrated && isAuthenticated && isStaff) {
+      getTenantStatus()
+          .then((data) => setSuspended(data.status === "suspended"))
+          .catch(() => {});
+    }
+  }, [hydrated, isAuthenticated, isStaff]);
+
+  useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
   if (!hydrated || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-gray-400">Loading...</div>
-      </div>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-pulse text-gray-400">Loading...</div>
+        </div>
     );
   }
 
-  return (
-    <div className="h-screen flex flex-col sm:flex-row overflow-hidden">
-      {/* Mobile Header */}
-      <div className="sm:hidden bg-brand-800 text-white flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-2">
-          <Shield className="w-6 h-6 text-brand-100" />
-          <span className="font-semibold text-sm">Insurance RAG</span>
-        </div>
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-1">
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
+  if (suspended) {
+    return <SuspendedScreen />;
+  }
 
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="sm:hidden bg-brand-800 text-white px-4 pb-4 space-y-1">
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href;
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
-                  active
-                    ? "bg-white/15 text-white font-medium"
-                    : "text-white/60 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                {label}
-              </Link>
-            );
-          })}
-          <div className="pt-3 mt-3 border-t border-white/10">
-            <div className="text-xs text-white/40 mb-2 px-3">{email}</div>
+  return (
+      <div className="h-screen flex flex-col sm:flex-row overflow-hidden">
+        {/* Mobile Header */}
+        <div className="sm:hidden bg-brand-800 text-white flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <Shield className="w-6 h-6 text-brand-100" />
+            <span className="font-semibold text-sm">Insurance RAG</span>
+          </div>
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-1">
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+            <div className="sm:hidden bg-brand-800 text-white px-4 pb-4 space-y-1">
+              {navItems.map(({ href, label, icon: Icon }) => {
+                const active = pathname === href;
+                return (
+                    <Link
+                        key={href}
+                        href={href}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
+                            active
+                                ? "bg-white/15 text-white font-medium"
+                                : "text-white/60 hover:bg-white/10 hover:text-white"
+                        }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      {label}
+                    </Link>
+                );
+              })}
+              <div className="pt-3 mt-3 border-t border-white/10">
+                <UsageIndicator />
+                <div className="text-xs text-white/40 mb-2 px-3 mt-3">{email}</div>
+                <button
+                    onClick={() => { logout(); router.push("/auth"); }}
+                    className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition px-3 py-2"
+                >
+                  <LogOut className="w-4 h-4" /> Sign Out
+                </button>
+              </div>
+            </div>
+        )}
+
+        {/* Desktop Sidebar */}
+        <aside className="hidden sm:flex w-64 bg-brand-800 text-white flex-col flex-shrink-0">
+          <div className="p-5 flex items-center gap-3 border-b border-white/10">
+            <Shield className="w-7 h-7 text-brand-100" />
+            <div>
+              <div className="font-semibold text-sm">Insurance RAG</div>
+              <div className="text-xs text-brand-100">Staff Dashboard</div>
+            </div>
+          </div>
+
+          <nav className="flex-1 p-3 space-y-1">
+            {navItems.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href;
+              return (
+                  <Link
+                      key={href}
+                      href={href}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
+                          active
+                              ? "bg-white/15 text-white font-medium"
+                              : "text-white/60 hover:bg-white/10 hover:text-white"
+                      }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {label}
+                  </Link>
+              );
+            })}
+          </nav>
+
+          <div className="border-t border-white/10">
+            <UsageIndicator />
+          </div>
+
+          <div className="p-4 border-t border-white/10">
+            <div className="text-xs text-white/40 mb-2">{email}</div>
             <button
-              onClick={() => { logout(); router.push("/auth"); }}
-              className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition px-3 py-2"
+                onClick={() => { logout(); router.push("/auth"); }}
+                className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition"
             >
               <LogOut className="w-4 h-4" /> Sign Out
             </button>
           </div>
-        </div>
-      )}
+        </aside>
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden sm:flex w-64 bg-brand-800 text-white flex-col flex-shrink-0">
-        <div className="p-5 flex items-center gap-3 border-b border-white/10">
-          <Shield className="w-7 h-7 text-brand-100" />
-          <div>
-            <div className="font-semibold text-sm">Insurance RAG</div>
-            <div className="text-xs text-brand-100">Staff Dashboard</div>
+        {/* Main content */}
+        <main className="flex-1 overflow-auto bg-gray-50">
+          <div className="p-4 pb-0">
+            <NotificationBanner />
           </div>
-        </div>
-
-        <nav className="flex-1 p-3 space-y-1">
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href;
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
-                  active
-                    ? "bg-white/15 text-white font-medium"
-                    : "text-white/60 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-white/10">
-          <div className="text-xs text-white/40 mb-2">{email}</div>
-          <button
-            onClick={() => { logout(); router.push("/auth"); }}
-            className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition"
-          >
-            <LogOut className="w-4 h-4" /> Sign Out
-          </button>
-        </div>
-      </aside>
-
-      {/* Main content */}
-      <main className="flex-1 overflow-auto bg-gray-50">{children}</main>
-    </div>
+          {children}
+        </main>
+      </div>
   );
 }

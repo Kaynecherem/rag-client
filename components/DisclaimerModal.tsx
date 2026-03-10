@@ -1,45 +1,91 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Shield } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { getTenantDisclaimer } from "@/lib/api";
 
-interface DisclaimerModalProps {
+/**
+ * DisclaimerModal — fetches disclaimer text configured in the back office.
+ *
+ * REPLACES your existing src/components/DisclaimerModal.tsx.
+ *
+ * Changes from the original:
+ * - Fetches disclaimer text from /api/v1/tenant/disclaimer (back-office-managed)
+ * - Respects the "disclaimer_enabled" flag — if disabled, never shows
+ * - Falls back to a hardcoded default if the API call fails
+ * - Still gated by sessionStorage so it only shows once per session
+ */
+
+interface Props {
   onAccept: () => void;
 }
 
-export default function DisclaimerModal({ onAccept }: DisclaimerModalProps) {
+export default function DisclaimerModal({ onAccept }: Props) {
+  const [visible, setVisible] = useState(false);
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if already accepted this session
+    if (sessionStorage.getItem("disclaimer_accepted")) {
+      onAccept();
+      return;
+    }
+
+    // Fetch from back office
+    getTenantDisclaimer()
+        .then((data) => {
+          if (!data.disclaimer_enabled) {
+            // Disclaimer disabled by admin — skip
+            onAccept();
+            return;
+          }
+          setText(data.disclaimer_text);
+          setVisible(true);
+        })
+        .catch(() => {
+          // Fallback — show default disclaimer
+          setText(
+              "This assistant provides information based on your insurance policy documents for " +
+              "informational purposes only. It does not constitute professional insurance advice, " +
+              "and should not be relied upon for coverage decisions. For binding interpretations, " +
+              "claims, or policy changes, please contact your insurance agent directly."
+          );
+          setVisible(true);
+        })
+        .finally(() => setLoading(false));
+  }, [onAccept]);
+
+  if (!visible || loading) return null;
+
+  const handleAccept = () => {
+    sessionStorage.setItem("disclaimer_accepted", "true");
+    setVisible(false);
+    onAccept();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 sm:p-8 animate-fade-in">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
-            <Shield className="w-5 h-5 text-brand-600" />
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xl">ℹ️</span>
+            <h2 className="text-lg font-semibold text-gray-900">Important Notice</h2>
           </div>
-          <h2 className="text-lg font-semibold text-gray-900">Important Notice</h2>
-        </div>
 
-        <div className="text-sm text-gray-600 leading-relaxed space-y-3">
-          <p>
-            The information provided herein is for informational purposes only
-            and your policy terms and conditions govern any coverage.
-          </p>
-          <p>
-            If after reading your policy, you have any additional questions,
-            you should contact your agency during normal business hours.
-          </p>
-          <p className="text-xs text-gray-400">
-            By clicking "I Acknowledge" below, you confirm that you understand
-            the above and wish to proceed.
-          </p>
-        </div>
+          <div className="text-sm text-gray-600 leading-relaxed mb-6 max-h-60 overflow-y-auto">
+            {text.split("\n").map((paragraph, i) => (
+                <p key={i} className={i > 0 ? "mt-3" : ""}>
+                  {paragraph}
+                </p>
+            ))}
+          </div>
 
-        <button
-          onClick={onAccept}
-          className="mt-6 w-full bg-brand-600 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition text-sm"
-        >
-          I Acknowledge
-        </button>
+          <button
+              onClick={handleAccept}
+              className="w-full py-3 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            I Understand
+          </button>
+        </div>
       </div>
-    </div>
   );
 }

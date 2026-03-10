@@ -232,3 +232,21 @@ export async function getStaffConversation(policyNumber: string) {
 export async function getPolicyholderConversation() {
   return request("/history/policyholder/conversation");
 }
+
+// ── Tenant Info (served by client backend, managed by back office) ───
+
+export async function getTenantNotifications() {
+  return request("/tenant/notifications");
+}
+
+export async function getTenantDisclaimer() {
+  return request("/tenant/disclaimer");
+}
+
+export async function getTenantUsage() {
+  return request("/tenant/usage");
+}
+
+export async function getTenantStatus() {
+  return request("/tenant/status");
+}
