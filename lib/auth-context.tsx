@@ -32,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [hydrated, setHydrated] = useState(false);
 
+
   // Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("auth");

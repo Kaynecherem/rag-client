@@ -1,9 +1,11 @@
 const API_BASE = "http://localhost:8000/api/v1";
-//const API_BASE = "https://d28pes0iok9s89.cloudfront.net/api/v1";
+// const API_BASE = process.env.NEXT_PUBLIC_API_URL
+//     ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
+//     : "https://d28pes0iok9s89.cloudfront.net/api/v1";
 
 async function request(path: string, options: RequestInit = {}) {
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string>),
@@ -21,8 +23,24 @@ async function request(path: string, options: RequestInit = {}) {
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(error.error || error.detail || `Request failed: ${res.status}`);
+    const body = await res.json().catch(() => ({ error: res.statusText }));
+    const message = body.error || body.detail || `Request failed: ${res.status}`;
+
+    // On 401 (invalid/expired token): clear auth and redirect
+    // EXCEPT for auth endpoints themselves (login, verify) — those should
+    // just return the error to the calling component
+    if (res.status === 401 && !path.startsWith("/auth/")) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("auth");
+        // Give the current call a chance to return, then redirect
+        setTimeout(() => {
+          window.location.href = "/auth";
+        }, 100);
+      }
+    }
+
+    throw new Error(message);
   }
 
   return res.json();
@@ -249,4 +267,46 @@ export async function getTenantUsage() {
 
 export async function getTenantStatus() {
   return request("/tenant/status");
+}
+
+// ── Admin Management (tenant admin only) ────────────────────────────────
+
+export async function adminListStaff(params: { page?: number; page_size?: number; search?: string } = {}) {
+  const qs = new URLSearchParams();
+  if (params.page) qs.set("page", String(params.page));
+  if (params.page_size) qs.set("page_size", String(params.page_size));
+  if (params.search) qs.set("search", params.search);
+  return request(`/admin/staff?${qs}`);
+}
+
+export async function adminCreateStaff(data: { email: string; name: string; role?: string }) {
+  return request("/admin/staff", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function adminUpdateStaff(staffId: string, data: { name?: string; role?: string; email?: string }) {
+  return request(`/admin/staff/${staffId}`, { method: "PUT", body: JSON.stringify(data) });
+}
+
+export async function adminToggleStaffStatus(staffId: string, isActive: boolean) {
+  return request(`/admin/staff/${staffId}/status`, { method: "PATCH", body: JSON.stringify({ is_active: isActive }) });
+}
+
+export async function adminListPolicyholders(params: { page?: number; page_size?: number; search?: string } = {}) {
+  const qs = new URLSearchParams();
+  if (params.page) qs.set("page", String(params.page));
+  if (params.page_size) qs.set("page_size", String(params.page_size));
+  if (params.search) qs.set("search", params.search);
+  return request(`/admin/policyholders?${qs}`);
+}
+
+export async function adminCreatePolicyholder(data: { policy_number: string; last_name?: string; company_name?: string }) {
+  return request("/admin/policyholders", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function adminUpdatePolicyholder(phId: string, data: { policy_number?: string; last_name?: string; company_name?: string }) {
+  return request(`/admin/policyholders/${phId}`, { method: "PUT", body: JSON.stringify(data) });
+}
+
+export async function adminTogglePolicyholderStatus(phId: string, isActive: boolean) {
+  return request(`/admin/policyholders/${phId}/status`, { method: "PATCH", body: JSON.stringify({ is_active: isActive }) });
 }
