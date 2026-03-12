@@ -310,3 +310,7 @@ export async function adminUpdatePolicyholder(phId: string, data: { policy_numbe
 export async function adminTogglePolicyholderStatus(phId: string, isActive: boolean) {
   return request(`/admin/policyholders/${phId}/status`, { method: "PATCH", body: JSON.stringify({ is_active: isActive }) });
 }
+
+export async function getCurrentUserInfo() {
+  return request("/tenant/me");
+}

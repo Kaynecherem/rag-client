@@ -7,13 +7,12 @@ import { useAuth } from "@/lib/auth-context";
 import NotificationBanner from "@/components/NotificationBanner";
 import UsageIndicator from "@/components/UsageIndicator";
 import SuspendedScreen from "@/components/SuspendedScreen";
-import { getTenantStatus } from "@/lib/api";
+import { getTenantStatus, getCurrentUserInfo } from "@/lib/api";
 import {
   Shield, Search, FileText, FolderOpen, History, LogOut, Menu, X,
   Users, UserCheck,
 } from "lucide-react";
 
-// Base nav items — visible to all staff
 const baseNavItems = [
   { href: "/staff/query", label: "Ask Questions", icon: Search },
   { href: "/staff/policies", label: "Policies", icon: FileText },
@@ -21,14 +20,13 @@ const baseNavItems = [
   { href: "/staff/history", label: "Query History", icon: History },
 ];
 
-// Admin-only nav items — only visible when role === "admin"
 const adminNavItems = [
   { href: "/staff/manage-staff", label: "Manage Staff", icon: Users },
   { href: "/staff/manage-policyholders", label: "Manage Policyholders", icon: UserCheck },
 ];
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
-  const { isStaff, isAuthenticated, logout, email, role, hydrated } = useAuth();
+  const { isStaff, isAuthenticated, logout, email, role, updateRole, hydrated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -43,13 +41,41 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
     }
   }, [hydrated, isAuthenticated, isStaff, router]);
 
+  // Check tenant status + sync role from DB on mount and every 2 minutes
   useEffect(() => {
-    if (hydrated && isAuthenticated && isStaff) {
+    if (!hydrated || !isAuthenticated || !isStaff) return;
+
+    const syncFromBackend = () => {
+      // Check tenant suspension
       getTenantStatus()
         .then((data) => setSuspended(data.status === "suspended"))
         .catch(() => {});
+
+      // Sync role from DB — detects role changes from superadmin
+      getCurrentUserInfo()
+        .then((data) => {
+          if (data.role && data.role !== role) {
+            updateRole(data.role as "admin" | "staff");
+          }
+        })
+        .catch((err) => {
+          // 403 = deactivated, 401 = token invalid — both handled by api.ts request()
+        });
+    };
+
+    syncFromBackend();
+    const interval = setInterval(syncFromBackend, 2 * 60 * 1000); // every 2 minutes
+    return () => clearInterval(interval);
+  }, [hydrated, isAuthenticated, isStaff, role, updateRole]);
+
+  // If a demoted user is on an admin page, redirect them
+  useEffect(() => {
+    if (!hydrated) return;
+    const onAdminPage = pathname.startsWith("/staff/manage-");
+    if (onAdminPage && role !== "admin") {
+      router.replace("/staff/query");
     }
-  }, [hydrated, isAuthenticated, isStaff]);
+  }, [role, pathname, hydrated, router]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -142,7 +168,6 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
             );
           })}
 
-          {/* Admin section — only visible to admin role */}
           {isAdmin && (
             <>
               <div className="pt-3 mt-3 border-t border-white/10">

@@ -14,6 +14,7 @@ interface AuthContextType extends AuthState {
   loginStaff: (token: string, tenantId: string, role: string, email: string) => void;
   loginPolicyholder: (token: string, tenantId: string, policyNumber: string) => void;
   logout: () => void;
+  updateRole: (newRole: "admin" | "staff") => void;
   isStaff: boolean;
   isPolicyholder: boolean;
   isAuthenticated: boolean;
@@ -31,7 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: null,
   });
   const [hydrated, setHydrated] = useState(false);
-
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -70,6 +70,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuth({ token: null, tenantId: null, role: null, policyNumber: null, email: null });
   };
 
+  const updateRole = (newRole: "admin" | "staff") => {
+    setAuth((prev) => {
+      if (prev.role === newRole) return prev; // no change
+      return { ...prev, role: newRole };
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -77,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginStaff,
         loginPolicyholder,
         logout,
+        updateRole,
         isStaff: auth.role === "admin" || auth.role === "staff",
         isPolicyholder: auth.role === "policyholder",
         isAuthenticated: !!auth.token,

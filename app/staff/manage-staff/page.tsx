@@ -8,7 +8,7 @@ import { Search, Plus, Loader2 } from "lucide-react";
 
 interface StaffItem {
   id: string; email: string; name: string | null; role: string;
-  is_active: boolean; last_login_at: string | null; created_at: string | null;
+  is_active: boolean; is_self: boolean; last_login_at: string | null; created_at: string | null;
 }
 
 export default function AdminStaffPage() {
@@ -109,7 +109,13 @@ export default function AdminStaffPage() {
                       <input value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Email" />
                     </div>
                   ) : (
-                    <><div className="text-sm font-medium text-gray-900">{s.name || "—"}</div><div className="text-xs text-gray-500">{s.email}</div></>
+                    <>
+                      <div className="text-sm font-medium text-gray-900">
+                        {s.name || "—"}
+                        {s.is_self && <span className="ml-1.5 text-[10px] text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded-full">You</span>}
+                      </div>
+                      <div className="text-xs text-gray-500">{s.email}</div>
+                    </>
                   )}
                 </td>
                 <td className="px-4 py-3 hidden sm:table-cell">
@@ -127,7 +133,9 @@ export default function AdminStaffPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  {editingId === s.id ? (
+                  {s.is_self ? (
+                    <span className="text-xs text-gray-400">Cannot modify own account</span>
+                  ) : editingId === s.id ? (
                     <div className="flex gap-1 justify-end">
                       <button onClick={() => setEditingId(null)} className="px-2 py-1 text-xs text-gray-500 border rounded hover:bg-gray-50">Cancel</button>
                       <button onClick={() => handleSaveEdit(s.id)} disabled={saving} className="px-2 py-1 text-xs bg-brand-600 text-white rounded hover:bg-brand-700 disabled:opacity-50">Save</button>
