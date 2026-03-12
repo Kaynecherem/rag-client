@@ -314,3 +314,28 @@ export async function adminTogglePolicyholderStatus(phId: string, isActive: bool
 export async function getCurrentUserInfo() {
   return request("/tenant/me");
 }
+
+export async function staffAuth0Login(accessToken: string, email?: string) {
+  // This calls the backend directly — NOT through the `request` helper,
+  // because we don't have our own JWT yet (that's what we're getting).
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL
+      ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
+      : "http://localhost:8000/api/v1";
+
+  const res = await fetch(`${API_BASE}/auth/staff-login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ access_token: accessToken, email }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ detail: res.statusText }));
+    const message = Array.isArray(body.detail)
+        ? body.detail.map((e: any) => e.msg || JSON.stringify(e)).join("; ")
+        : body.detail || body.error || `Login failed: ${res.status}`;
+    throw new Error(message);
+  }
+
+  return res.json();
+}
+

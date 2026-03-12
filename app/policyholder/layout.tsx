@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { useAuth0 } from "@auth0/auth0-react";
 import NotificationBanner from "@/components/NotificationBanner";
 import SuspendedScreen from "@/components/SuspendedScreen";
 import { getTenantStatus } from "@/lib/api";
@@ -16,9 +17,19 @@ const navItems = [
 
 export default function PolicyholderLayout({ children }: { children: React.ReactNode }) {
   const { isPolicyholder, isAuthenticated, logout, policyNumber, hydrated } = useAuth();
+  const { logout: auth0Logout } = useAuth0();
   const router = useRouter();
   const pathname = usePathname();
   const [suspended, setSuspended] = useState(false);
+
+  const handleSignOut = () => {
+    logout();
+    auth0Logout({
+      logoutParams: {
+        returnTo: window.location.origin + "/auth",
+      },
+    });
+  };
 
   useEffect(() => {
     if (hydrated && (!isAuthenticated || !isPolicyholder)) {
@@ -88,7 +99,7 @@ export default function PolicyholderLayout({ children }: { children: React.React
 
             {/* Sign Out */}
             <button
-                onClick={() => { logout(); router.push("/auth"); }}
+                onClick={handleSignOut}
                 className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-gray-500 hover:text-gray-700 transition"
             >
               <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
