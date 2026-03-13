@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "@/lib/auth-context";
+import { useTenant } from "@/lib/tenant-context";
 import { verifyPolicyholder, staffAuth0Login } from "@/lib/api";
 import { Shield, User, Building2, Loader2, LogIn } from "lucide-react";
 
@@ -11,6 +12,7 @@ export default function AuthPage() {
   const router = useRouter();
   const { loginStaff, loginPolicyholder, isAuthenticated, isStaff, isPolicyholder, hydrated } = useAuth();
   const { loginWithPopup, getAccessTokenSilently, user: auth0User, isAuthenticated: auth0Authenticated, getIdTokenClaims, isLoading: auth0Loading } = useAuth0();
+  const { tenant, tenantId: resolvedTenantId, slug } = useTenant();
 
   const [mode, setMode] = useState<"staff" | "policyholder">("staff");
   const [loading, setLoading] = useState(false);
@@ -22,6 +24,18 @@ export default function AuthPage() {
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [tenantId, setTenantId] = useState("");
+
+// Auto-set tenant from subdomain
+  useEffect(() => {
+    if (resolvedTenantId) {
+      setTenantId(resolvedTenantId);
+    } else {
+      // Fallback: check localStorage (legacy flow)
+      const stored = localStorage.getItem("tenant_id");
+      if (stored) setTenantId(stored);
+    }
+  }, [resolvedTenantId]);
+
 
   // Load tenant_id from localStorage if previously set
   useEffect(() => {
@@ -102,8 +116,8 @@ export default function AuthPage() {
   // Policyholder verification
   const handlePolicyholderVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!tenantId.trim()) {
-      setError("Tenant ID is required. Ask your insurance provider for it.");
+    if (!tenantId.trim() && !slug) {
+      setError("Agency code is required. Ask your insurance provider for it.");
       return;
     }
 
@@ -112,7 +126,8 @@ export default function AuthPage() {
 
     try {
       const result = await verifyPolicyholder({
-        tenant_id: tenantId.trim(),
+        tenant_id: tenantId.trim() || undefined,
+        slug: slug || undefined,
         policy_number: policyNumber.trim(),
         last_name: verifyBy === "person" ? lastName.trim() : undefined,
         company_name: verifyBy === "company" ? companyName.trim() : undefined,
@@ -201,6 +216,11 @@ export default function AuthPage() {
             </div>
           ) : (
             <form onSubmit={handlePolicyholderVerify}>
+              {tenant && (
+                  <div className="text-center mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900">{tenant.name}</h2>
+                  </div>
+              )}
               <h2 className="text-lg font-semibold text-gray-900 mb-2">
                 Verify Your Identity
               </h2>
@@ -211,20 +231,20 @@ export default function AuthPage() {
               <div className="space-y-4">
                 {/* Tenant ID — hidden for most users, pre-filled from localStorage */}
                 <input type="hidden" value={tenantId} />
-                {!tenantId && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Agency Code
-                    </label>
-                    <input
-                      type="text"
-                      value={tenantId}
-                      onChange={(e) => setTenantId(e.target.value)}
-                      placeholder="Provided by your insurance agency"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm"
-                    />
-                  </div>
+                {!slug && !tenantId && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Agency Code
+                      </label>
+                      <input
+                          type="text"
+                          value={tenantId}
+                          onChange={(e) => setTenantId(e.target.value)}
+                          placeholder="Provided by your insurance agency"
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm"
+                      />
+                    </div>
                 )}
 
                 <div>

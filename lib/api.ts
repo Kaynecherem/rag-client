@@ -53,7 +53,8 @@ export async function testSetup() {
 }
 
 export async function verifyPolicyholder(data: {
-  tenant_id: string;
+  tenant_id?: string;
+  slug?: string;
   policy_number: string;
   last_name?: string;
   company_name?: string;

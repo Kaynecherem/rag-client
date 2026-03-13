@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TenantProvider } from "@/lib/tenant-context";
 import { AuthProvider } from "@/lib/auth-context";
 import Auth0ProviderWrapper from "@/components/Auth0ProviderWrapper";
 import "./globals.css";
@@ -15,10 +16,12 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-        <body className="antialiased">
+        <body>
         <Auth0ProviderWrapper>
             <AuthProvider>
-                {children}
+                <TenantProvider>
+                    {children}
+                </TenantProvider>
             </AuthProvider>
         </Auth0ProviderWrapper>
         </body>
