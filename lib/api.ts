@@ -1,7 +1,7 @@
-const API_BASE = "http://localhost:8000/api/v1";
-// const API_BASE = process.env.NEXT_PUBLIC_API_URL
-//     ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
-//     : "https://d28pes0iok9s89.cloudfront.net/api/v1";
+// const API_BASE = "http://localhost:8000/api/v1";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
+    : "https://d28pes0iok9s89.cloudfront.net/api/v1";
 
 async function request(path: string, options: RequestInit = {}) {
   const token =
