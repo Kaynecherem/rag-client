@@ -231,7 +231,7 @@ export default function AuthPage() {
               <div className="space-y-4">
                 {/* Tenant ID — hidden for most users, pre-filled from localStorage */}
                 <input type="hidden" value={tenantId} />
-                {!slug && !tenantId && (
+                {!slug && !resolvedTenantId && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Agency Code
