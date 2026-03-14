@@ -27,6 +27,7 @@ interface QueryItem {
   id: string;
   user_type: string;
   user_identifier: string;
+  user_display_name?: string;
   policy_number: string | null;
   document_type: string | null;
   question: string;
@@ -162,251 +163,251 @@ export default function StaffHistoryPage() {
   const hasFilters = userTypeFilter || docTypeFilter || policyFilter || searchText;
 
   return (
-    <div className="p-4 sm:p-6 max-w-6xl">
-      <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-        <History className="w-5 h-5" /> Query History
-      </h1>
-      <p className="text-sm text-gray-500 mt-1">
-        Browse all past queries across your agency
-      </p>
+      <div className="p-4 sm:p-6 max-w-6xl">
+        <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+          <History className="w-5 h-5" /> Query History
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Browse all past queries across your agency
+        </p>
 
-      {/* Stats Cards */}
-      {!statsLoading && stats && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
-              <BarChart3 className="w-3.5 h-3.5" /> Total Queries
+        {/* Stats Cards */}
+        {!statsLoading && stats && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
+                  <BarChart3 className="w-3.5 h-3.5" /> Total Queries
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mt-1">{stats.total_queries}</div>
+              </div>
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
+                  <Users className="w-3.5 h-3.5" /> By User
+                </div>
+                <div className="mt-1 text-sm">
+                  <span className="font-semibold text-blue-700">{stats.by_user_type.staff}</span>
+                  <span className="text-gray-400 mx-1">staff</span>
+                  <span className="font-semibold text-green-700">{stats.by_user_type.policyholder}</span>
+                  <span className="text-gray-400 ml-1">holders</span>
+                </div>
+              </div>
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
+                  <FileText className="w-3.5 h-3.5" /> Avg Confidence
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mt-1">
+                  {(stats.avg_confidence * 100).toFixed(1)}%
+                </div>
+              </div>
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
+                  <Clock className="w-3.5 h-3.5" /> Avg Latency
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mt-1">
+                  {stats.avg_latency_ms}ms
+                </div>
+              </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900 mt-1">{stats.total_queries}</div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
-              <Users className="w-3.5 h-3.5" /> By User
-            </div>
-            <div className="mt-1 text-sm">
-              <span className="font-semibold text-blue-700">{stats.by_user_type.staff}</span>
-              <span className="text-gray-400 mx-1">staff</span>
-              <span className="font-semibold text-green-700">{stats.by_user_type.policyholder}</span>
-              <span className="text-gray-400 ml-1">holders</span>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
-              <FileText className="w-3.5 h-3.5" /> Avg Confidence
-            </div>
-            <div className="text-2xl font-bold text-gray-900 mt-1">
-              {(stats.avg_confidence * 100).toFixed(1)}%
-            </div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <div className="flex items-center gap-2 text-gray-500 text-xs font-medium">
-              <Clock className="w-3.5 h-3.5" /> Avg Latency
-            </div>
-            <div className="text-2xl font-bold text-gray-900 mt-1">
-              {stats.avg_latency_ms}ms
-            </div>
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Filters */}
-      <div className="mt-5 bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <form onSubmit={handleSearch} className="flex-1 min-w-[200px] relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search questions..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-          </form>
+        {/* Filters */}
+        <div className="mt-5 bg-white rounded-xl border border-gray-200 p-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <form onSubmit={handleSearch} className="flex-1 min-w-[200px] relative">
+              <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+              <input
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  placeholder="Search questions..."
+                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </form>
 
-          <select
-            value={userTypeFilter}
-            onChange={(e) => { setUserTypeFilter(e.target.value); setPage(1); }}
-            className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-          >
-            <option value="">All Users</option>
-            <option value="staff">Staff</option>
-            <option value="policyholder">Policyholder</option>
-          </select>
-
-          <select
-            value={docTypeFilter}
-            onChange={(e) => { setDocTypeFilter(e.target.value); setPage(1); }}
-            className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-          >
-            <option value="">All Types</option>
-            <option value="policy">Policy</option>
-            <option value="communication">Communication</option>
-          </select>
-
-          <input
-            type="text"
-            value={policyFilter}
-            onChange={(e) => { setPolicyFilter(e.target.value); setPage(1); }}
-            placeholder="Policy #"
-            className="w-36 text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-
-          {hasFilters && (
-            <button
-              onClick={clearFilters}
-              className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+            <select
+                value={userTypeFilter}
+                onChange={(e) => { setUserTypeFilter(e.target.value); setPage(1); }}
+                className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
             >
-              <X className="w-3.5 h-3.5" /> Clear
-            </button>
-          )}
-        </div>
-      </div>
+              <option value="">All Users</option>
+              <option value="staff">Staff</option>
+              <option value="policyholder">Policyholder</option>
+            </select>
 
-      {/* Results */}
-      <div className="mt-4">
-        {loading ? (
-          <div className="flex items-center justify-center py-12 text-gray-400">
-            <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading...
-          </div>
-        ) : queries.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-30" />
-            <p>No queries found</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {queries.map((q) => (
-              <div key={q.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <select
+                value={docTypeFilter}
+                onChange={(e) => { setDocTypeFilter(e.target.value); setPage(1); }}
+                className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              <option value="">All Types</option>
+              <option value="policy">Policy</option>
+              <option value="communication">Communication</option>
+            </select>
+
+            <input
+                type="text"
+                value={policyFilter}
+                onChange={(e) => { setPolicyFilter(e.target.value); setPage(1); }}
+                placeholder="Policy #"
+                className="w-36 text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+
+            {hasFilters && (
                 <button
-                  onClick={() => openDetail(q.id)}
-                  className="w-full text-left px-4 sm:px-5 py-3 sm:py-4 hover:bg-gray-50 transition"
+                    onClick={clearFilters}
+                    className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900 line-clamp-1 break-words">
-                        {q.question}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1 line-clamp-1 break-words">
-                        {q.answer_preview}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
+                  <X className="w-3.5 h-3.5" /> Clear
+                </button>
+            )}
+          </div>
+        </div>
+
+        {/* Results */}
+        <div className="mt-4">
+          {loading ? (
+              <div className="flex items-center justify-center py-12 text-gray-400">
+                <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading...
+              </div>
+          ) : queries.length === 0 ? (
+              <div className="text-center py-12 text-gray-400">
+                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                <p>No queries found</p>
+              </div>
+          ) : (
+              <div className="space-y-2">
+                {queries.map((q) => (
+                    <div key={q.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                      <button
+                          onClick={() => openDetail(q.id)}
+                          className="w-full text-left px-4 sm:px-5 py-3 sm:py-4 hover:bg-gray-50 transition"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-900 line-clamp-1 break-words">
+                              {q.question}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1 line-clamp-1 break-words">
+                              {q.answer_preview}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
                       <span className="text-xs text-gray-400 hidden sm:inline">
                         {new Date(q.queried_at).toLocaleDateString()} {new Date(q.queried_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
-                      <span className="text-xs text-gray-400 sm:hidden">
+                            <span className="text-xs text-gray-400 sm:hidden">
                         {new Date(q.queried_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
                       </span>
-                      {selectedId === q.id ? (
-                        <ChevronUp className="w-4 h-4 text-gray-400" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-gray-400">
+                            {selectedId === q.id ? (
+                                <ChevronUp className="w-4 h-4 text-gray-400" />
+                            ) : (
+                                <ChevronDown className="w-4 h-4 text-gray-400" />
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-gray-400">
                     <span className={`px-2 py-0.5 rounded-full font-medium ${
-                      q.user_type === "staff" || q.user_type === "admin"
-                        ? "bg-blue-50 text-blue-700"
-                        : "bg-green-50 text-green-700"
+                        q.user_type === "staff" || q.user_type === "admin"
+                            ? "bg-blue-50 text-blue-700"
+                            : "bg-green-50 text-green-700"
                     }`}>
                       {q.user_type === "admin" ? "staff" : q.user_type}
                     </span>
-                    <span className="truncate max-w-[120px] sm:max-w-none">{q.user_identifier}</span>
-                    {q.policy_number && <span className="hidden sm:inline">Policy: {q.policy_number}</span>}
-                    {q.document_type && (
-                      <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                          <span className="truncate max-w-[120px] sm:max-w-none">{q.user_display_name || q.user_identifier}</span>
+                          {q.policy_number && <span className="hidden sm:inline">Policy: {q.policy_number}</span>}
+                          {q.document_type && (
+                              <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                         {q.document_type}
                       </span>
-                    )}
-                    <span className="hidden sm:inline">{q.citation_count} citations</span>
-                    {q.confidence != null && (
-                      <span>{(q.confidence * 100).toFixed(0)}% conf</span>
-                    )}
-                    <span className="hidden sm:inline">{q.latency_ms}ms</span>
-                  </div>
-                </button>
-
-                {/* Expanded detail */}
-                {selectedId === q.id && (
-                  <div className="border-t border-gray-100 px-5 py-4">
-                    {detailLoading ? (
-                      <div className="flex items-center text-gray-400 text-sm">
-                        <Loader2 className="w-4 h-4 animate-spin mr-2" /> Loading detail...
-                      </div>
-                    ) : detail ? (
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Answer</h4>
-                          <p className="text-sm text-gray-800"><MarkdownResponse content={detail.answer} /></p>
+                          )}
+                          <span className="hidden sm:inline">{q.citation_count} citations</span>
+                          {q.confidence != null && (
+                              <span>{(q.confidence * 100).toFixed(0)}% conf</span>
+                          )}
+                          <span className="hidden sm:inline">{q.latency_ms}ms</span>
                         </div>
-                        {detail.citations && detail.citations.length > 0 && (
-                          <div>
-                            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                              Citations ({detail.citations.length})
-                            </h4>
-                            <div className="space-y-2">
-                              {detail.citations.map((c, i) => (
-                                <div key={i} className="bg-gray-50 rounded-lg p-3 text-xs">
-                                  <div className="flex items-center gap-2 text-gray-500 mb-1">
+                      </button>
+
+                      {/* Expanded detail */}
+                      {selectedId === q.id && (
+                          <div className="border-t border-gray-100 px-5 py-4">
+                            {detailLoading ? (
+                                <div className="flex items-center text-gray-400 text-sm">
+                                  <Loader2 className="w-4 h-4 animate-spin mr-2" /> Loading detail...
+                                </div>
+                            ) : detail ? (
+                                <div className="space-y-4">
+                                  <div>
+                                    <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Answer</h4>
+                                    <p className="text-sm text-gray-800"><MarkdownResponse content={detail.answer} /></p>
+                                  </div>
+                                  {detail.citations && detail.citations.length > 0 && (
+                                      <div>
+                                        <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                                          Citations ({detail.citations.length})
+                                        </h4>
+                                        <div className="space-y-2">
+                                          {detail.citations.map((c, i) => (
+                                              <div key={i} className="bg-gray-50 rounded-lg p-3 text-xs">
+                                                <div className="flex items-center gap-2 text-gray-500 mb-1">
                                     <span className="font-medium">
                                       Page {c.page || "?"} · {c.section}
                                     </span>
-                                    <span className="text-gray-400">
+                                                  <span className="text-gray-400">
                                       {(c.similarity_score * 100).toFixed(1)}% match
                                     </span>
-                                  </div>
-                                  <p className="text-gray-700 line-clamp-3">{c.text}</p>
+                                                </div>
+                                                <p className="text-gray-700 line-clamp-3">{c.text}</p>
+                                              </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                  )}
+                                  {detail.policy_number && (detail.user_type === "admin" || detail.user_type === "staff") && (
+                                      <button
+                                          onClick={() => router.push(`/staff/query?policy=${detail.policy_number}&scroll_to=${detail.id}`)}
+                                          className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 font-medium transition mt-2"
+                                      >
+                                        <MessageSquare className="w-3.5 h-3.5" />
+                                        Continue this conversation
+                                      </button>
+                                  )}
                                 </div>
-                              ))}
-                            </div>
+                            ) : (
+                                <p className="text-sm text-gray-500">Could not load detail</p>
+                            )}
                           </div>
-                        )}
-                        {detail.policy_number && (detail.user_type === "admin" || detail.user_type === "staff") && (
-                          <button
-                            onClick={() => router.push(`/staff/query?policy=${detail.policy_number}&scroll_to=${detail.id}`)}
-                            className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 font-medium transition mt-2"
-                          >
-                            <MessageSquare className="w-3.5 h-3.5" />
-                            Continue this conversation
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500">Could not load detail</p>
-                    )}
-                  </div>
-                )}
+                      )}
+                    </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+          )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4">
+          {/* Pagination */}
+          {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4">
             <span className="text-sm text-gray-500">
               Page {page} of {totalPages} ({total} total)
             </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
+                <div className="flex gap-2">
+                  <button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page <= 1}
+                      className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                  >
+                    Previous
+                  </button>
+                  <button
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page >= totalPages}
+                      className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+          )}
+        </div>
       </div>
-    </div>
   );
 }
