@@ -292,6 +292,10 @@ export async function adminToggleStaffStatus(staffId: string, isActive: boolean)
   return request(`/admin/staff/${staffId}/status`, { method: "PATCH", body: JSON.stringify({ is_active: isActive }) });
 }
 
+export async function resetStaffPassword(staffId: string) {
+  return request(`/admin/staff/${staffId}/reset-password`, { method: "POST" });
+}
+
 export async function adminListPolicyholders(params: { page?: number; page_size?: number; search?: string } = {}) {
   const qs = new URLSearchParams();
   if (params.page) qs.set("page", String(params.page));
