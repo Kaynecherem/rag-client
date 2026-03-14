@@ -195,11 +195,11 @@ export default function AdminStaffPage() {
                         </div>
                     ) : (
                         <div className="flex gap-1 justify-end">
-                          <button onClick={() => { setEditingId(s.id); setEditForm({ name: s.name || "", email: s.email, role: s.role }); setError(""); }} className="px-2 py-1 text-xs text-gray-500 border rounded hover:bg-gray-50">Edit</button>
-                          <button onClick={() => handleResetPassword(s.id, s.email)} className="px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded hover:bg-blue-50">Reset PW</button>
                           <button onClick={() => handleToggle(s)} className={`px-2 py-1 text-xs rounded border ${s.is_active ? "text-red-600 border-red-200 hover:bg-red-50" : "text-green-600 border-green-200 hover:bg-green-50"}`}>
                             {s.is_active ? "Deactivate" : "Activate"}
                           </button>
+                          <button onClick={() => { setEditingId(s.id); setEditForm({ name: s.name || "", email: s.email, role: s.role }); setError(""); }} className="px-2 py-1 text-xs text-gray-500 border rounded hover:bg-gray-50">Edit</button>
+                          <button onClick={() => handleResetPassword(s.id, s.email)} className="px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded hover:bg-blue-50">Reset PW</button>
                         </div>
                     )}
                   </td>
