@@ -272,11 +272,17 @@ export async function getTenantStatus() {
 
 // ── Admin Management (tenant admin only) ────────────────────────────────
 
-export async function adminListStaff(params: { page?: number; page_size?: number; search?: string } = {}) {
+export async function adminListStaff(params: {
+  page?: number; page_size?: number; search?: string;
+  show_deleted?: boolean; sort_by?: string; sort_order?: string;
+} = {}) {
   const qs = new URLSearchParams();
   if (params.page) qs.set("page", String(params.page));
   if (params.page_size) qs.set("page_size", String(params.page_size));
   if (params.search) qs.set("search", params.search);
+  if (params.show_deleted) qs.set("show_deleted", "true");
+  if (params.sort_by) qs.set("sort_by", params.sort_by);
+  if (params.sort_order) qs.set("sort_order", params.sort_order);
   return request(`/admin/staff?${qs}`);
 }
 

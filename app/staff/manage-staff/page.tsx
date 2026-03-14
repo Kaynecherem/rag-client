@@ -35,22 +35,55 @@ export default function AdminStaffPage() {
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetCopied, setResetCopied] = useState(false);
 
+  // Sorting
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  // Deleted users section
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [deletedStaff, setDeletedStaff] = useState<StaffItem[]>([]);
+  const [deletedTotal, setDeletedTotal] = useState(0);
+  const [deletedLoading, setDeletedLoading] = useState(false);
+
   const pageSize = 15;
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await adminListStaff({ page, page_size: pageSize, search: search || undefined });
+      const data = await adminListStaff({
+        page, page_size: pageSize,
+        search: search || undefined,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+      });
       setStaff(data.staff); setTotal(data.total);
     } catch (err: any) { setError(err.message); }
     finally { setLoading(false); }
-  }, [page, search]);
+  }, [page, search, sortBy, sortOrder]);
+
+  const loadDeleted = useCallback(async () => {
+    setDeletedLoading(true);
+    try {
+      const data = await adminListStaff({
+        page_size: 50,
+        show_deleted: true,
+        sort_by: "name",
+        sort_order: "asc",
+      });
+      setDeletedStaff(data.staff);
+      setDeletedTotal(data.total);
+    } catch (err) { console.error(err); }
+    finally { setDeletedLoading(false); }
+  }, []);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => {
     const t = setTimeout(() => { setSearch(searchInput); setPage(1); }, 300);
     return () => clearTimeout(t);
   }, [searchInput]);
+  useEffect(() => {
+    if (showDeleted) loadDeleted();
+  }, [showDeleted, loadDeleted]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true); setError(""); setPasswordLink(null); setCopied(false);
@@ -132,10 +165,36 @@ export default function AdminStaffPage() {
           </button>
         </div>
 
-        <div className="relative mb-4">
+        <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Search by name or email..."
                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
+        </div>
+
+        {/* Sort controls */}
+        <div className="flex items-center gap-2 mb-4 flex-wrap text-xs">
+          <span className="text-gray-400">Sort by:</span>
+          {["name", "email", "role", "created_at", "last_login_at"].map((field) => (
+              <button
+                  key={field}
+                  onClick={() => {
+                    if (sortBy === field) {
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    } else {
+                      setSortBy(field);
+                      setSortOrder("asc");
+                    }
+                    setPage(1);
+                  }}
+                  className={`px-2 py-1 rounded transition ${
+                      sortBy === field
+                          ? "bg-brand-50 text-brand-700 border border-brand-200"
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                {field.replace("_", " ")}{sortBy === field ? (sortOrder === "asc" ? " ↑" : " ↓") : ""}
+              </button>
+          ))}
         </div>
 
         {error && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">{error}</div>}
@@ -195,11 +254,11 @@ export default function AdminStaffPage() {
                         </div>
                     ) : (
                         <div className="flex gap-1 justify-end">
+                          <button onClick={() => { setEditingId(s.id); setEditForm({ name: s.name || "", email: s.email, role: s.role }); setError(""); }} className="px-2 py-1 text-xs text-gray-500 border rounded hover:bg-gray-50">Edit</button>
+                          <button onClick={() => handleResetPassword(s.id, s.email)} className="px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded hover:bg-blue-50">Reset PW</button>
                           <button onClick={() => handleToggle(s)} className={`px-2 py-1 text-xs rounded border ${s.is_active ? "text-red-600 border-red-200 hover:bg-red-50" : "text-green-600 border-green-200 hover:bg-green-50"}`}>
                             {s.is_active ? "Deactivate" : "Activate"}
                           </button>
-                          <button onClick={() => { setEditingId(s.id); setEditForm({ name: s.name || "", email: s.email, role: s.role }); setError(""); }} className="px-2 py-1 text-xs text-gray-500 border rounded hover:bg-gray-50">Edit</button>
-                          <button onClick={() => handleResetPassword(s.id, s.email)} className="px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded hover:bg-blue-50">Reset PW</button>
                         </div>
                     )}
                   </td>
@@ -214,6 +273,57 @@ export default function AdminStaffPage() {
                   <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="px-3 py-1 text-xs border rounded hover:bg-gray-100 disabled:opacity-30">Prev</button>
                   <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1 text-xs border rounded hover:bg-gray-100 disabled:opacity-30">Next</button>
                 </div>
+              </div>
+          )}
+        </div>
+
+        {/* Deleted Users Section */}
+        <div className="mt-6 border-t border-gray-200 pt-4">
+          <button
+              onClick={() => setShowDeleted(!showDeleted)}
+              className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-600 transition"
+          >
+            <span>{showDeleted ? "▼" : "▶"}</span>
+            <span>Deleted Users ({deletedTotal})</span>
+          </button>
+
+          {showDeleted && (
+              <div className="mt-3">
+                {deletedLoading ? (
+                    <div className="flex justify-center py-6">
+                      <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                    </div>
+                ) : deletedStaff.length === 0 ? (
+                    <p className="text-xs text-gray-400 py-4">No deleted users.</p>
+                ) : (
+                    <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
+                      <table className="w-full">
+                        <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left px-4 py-2 text-[11px] font-medium text-gray-400 uppercase tracking-wider">User</th>
+                          <th className="text-left px-4 py-2 text-[11px] font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Role</th>
+                          <th className="text-left px-4 py-2 text-[11px] font-medium text-gray-400 uppercase tracking-wider hidden md:table-cell">Deleted</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {deletedStaff.map((s) => (
+                            <tr key={s.id} className="border-b border-gray-100 last:border-0">
+                              <td className="px-4 py-2">
+                                <div className="text-sm text-gray-400 line-through">{s.name || "—"}</div>
+                                <div className="text-[11px] text-gray-400">{s.email}</div>
+                              </td>
+                              <td className="px-4 py-2 hidden sm:table-cell">
+                                <span className="text-xs text-gray-400">{s.role}</span>
+                              </td>
+                              <td className="px-4 py-2 text-xs text-gray-400 hidden md:table-cell">
+                                {s.created_at ? new Date(s.created_at).toLocaleDateString() : "—"}
+                              </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                      </table>
+                    </div>
+                )}
               </div>
           )}
         </div>
