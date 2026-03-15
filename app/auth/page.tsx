@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "@/lib/auth-context";
@@ -9,7 +9,7 @@ import { verifyPolicyholder, staffAuth0Login } from "@/lib/api";
 import { User, Building2, Loader2 } from "lucide-react";
 import Image from "next/image";
 
-export default function AuthPage() {
+function AuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { loginStaff, loginPolicyholder, isAuthenticated, isStaff, isPolicyholder, hydrated } = useAuth();
@@ -366,5 +366,17 @@ export default function AuthPage() {
           </p>
         </div>
       </div>
+  );
+}
+
+export default function AuthPageWrapper() {
+  return (
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="animate-pulse text-gray-400">Loading...</div>
+        </div>
+      }>
+        <AuthPage />
+      </Suspense>
   );
 }
