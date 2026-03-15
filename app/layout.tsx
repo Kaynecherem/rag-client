@@ -5,8 +5,8 @@ import Auth0ProviderWrapper from "@/components/Auth0ProviderWrapper";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "Insurance RAG",
-    description: "AI-powered insurance policy intelligence",
+    title: "Patch - Policy Intelligence Platform",
+    description: "AI-powered policy intelligence, powered by Patch",
 };
 
 export default function RootLayout({
@@ -28,4 +28,3 @@ export default function RootLayout({
         </html>
     );
 }
-
