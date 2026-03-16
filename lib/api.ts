@@ -326,24 +326,49 @@ export async function getCurrentUserInfo() {
   return request("/tenant/me");
 }
 
-export async function staffAuth0Login(accessToken: string, email?: string) {
+export async function staffAuth0Login(
+    accessToken: string,
+    email?: string,
+    tenantId?: string,
+    slug?: string,
+) {
   // This calls the backend directly — NOT through the `request` helper,
   // because we don't have our own JWT yet (that's what we're getting).
   const API_BASE = process.env.NEXT_PUBLIC_API_URL
       ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
       : "http://localhost:8000/api/v1";
 
+  const payload: Record<string, string | undefined> = {
+    access_token: accessToken,
+    email,
+  };
+
+  // Pass tenant scope if available (for multi-tenant users)
+  if (tenantId) payload.tenant_id = tenantId;
+  if (slug) payload.slug = slug;
+
   const res = await fetch(`${API_BASE}/auth/staff-login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ access_token: accessToken, email }),
+    body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ detail: res.statusText }));
+
+    // 409 with multiple tenants → throw structured error for tenant picker
+    if (res.status === 409 && body.detail?.error === "multiple_tenants") {
+      const err: any = new Error(body.detail.message);
+      err.code = "multiple_tenants";
+      err.tenants = body.detail.tenants;
+      throw err;
+    }
+
     const message = Array.isArray(body.detail)
         ? body.detail.map((e: any) => e.msg || JSON.stringify(e)).join("; ")
-        : body.detail || body.error || `Login failed: ${res.status}`;
+        : typeof body.detail === "string"
+            ? body.detail
+            : body.detail?.message || body.error || `Login failed: ${res.status}`;
     throw new Error(message);
   }
 
