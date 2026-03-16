@@ -357,10 +357,11 @@ export async function staffAuth0Login(
     const body = await res.json().catch(() => ({ detail: res.statusText }));
 
     // 409 with multiple tenants → throw structured error for tenant picker
-    if (res.status === 409 && body.detail?.error === "multiple_tenants") {
-      const err: any = new Error(body.detail.message);
+    const mtData = body.detail || body.error;
+    if (res.status === 409 && mtData?.error === "multiple_tenants") {
+      const err: any = new Error(mtData.message);
       err.code = "multiple_tenants";
-      err.tenants = body.detail.tenants;
+      err.tenants = mtData.tenants;
       throw err;
     }
 
