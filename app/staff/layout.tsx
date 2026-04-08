@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { useAuth } from "@/lib/auth-context";
 import { useAuth0 } from "@auth0/auth0-react";
 import NotificationBanner from "@/components/NotificationBanner";
@@ -109,21 +108,19 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 
         <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
           {/* Mobile Header */}
-          <div className="sm:hidden bg-brand-800 text-white flex items-center justify-between px-4 py-3">
+          <div className="sm:hidden bg-[#FAF8F4] border-b border-[#E9EAEA] flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg overflow-hidden">
-                <Image src="/patch-logo-blue.png" alt="Patch" width={28} height={28} className="w-full h-full object-cover" />
-              </div>
-              <span className="text-[10px] uppercase tracking-wider text-brand-100">Powered by Patch</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/patch-premium-finance-logo.svg" alt="Patch Premium Finance" style={{ height: '48px', width: 'auto' }} />
             </div>
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-1">
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-[#1A1A1A]">
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
 
           {/* Mobile Menu Overlay */}
           {mobileMenuOpen && (
-              <div className="sm:hidden bg-brand-800 text-white px-4 pb-4 space-y-1">
+              <div className="sm:hidden bg-[#FAF8F4] border-b border-[#E9EAEA] px-4 pb-4 space-y-1">
                 {navItems.map(({ href, label, icon: Icon }) => {
                   const active = pathname === href;
                   return (
@@ -132,8 +129,8 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
                           href={href}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
                               active
-                                  ? "bg-white/15 text-white font-medium"
-                                  : "text-white/60 hover:bg-white/10 hover:text-white"
+                                  ? "bg-[#F1F1F1] text-[#1A1A1A] font-medium border-l-2 border-[#FF7D55]"
+                                  : "text-[#656B6B] hover:bg-[#F1F1F1] hover:text-[#1A1A1A]"
                           }`}
                       >
                         <Icon className="w-5 h-5" />
@@ -141,29 +138,24 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
                       </Link>
                   );
                 })}
-                <div className="pt-3 mt-3 border-t border-white/10">
+                <div className="pt-3 mt-3 border-t border-[#E9EAEA]">
                   <UsageIndicator />
-                  <div className="text-xs text-white/40 mb-2 px-3 mt-3">{email}</div>
+                  <div className="text-xs text-[#A7AAAA] mb-2 px-3 mt-3">{email}</div>
                   <button
                       onClick={handleSignOut}
-                      className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition px-3 py-2"
+                      className="flex items-center gap-2 text-sm text-[#656B6B] hover:text-[#1A1A1A] transition px-3 py-2"
                   >
-                    <LogOut className="w-4 h-4" /> Sign Out
+                    <LogOut className="w-4 h-4" /> Sign out
                   </button>
                 </div>
               </div>
           )}
 
           {/* Desktop Sidebar */}
-          <aside className="hidden sm:flex w-64 bg-brand-800 text-white flex-col flex-shrink-0">
-            <div className="p-5 flex items-center gap-3 border-b border-white/10">
-              <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0">
-                <Image src="/patch-logo-blue.png" alt="Patch" width={36} height={36} className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-[0.12em] text-brand-100">Powered by Patch</div>
-                <div className="text-xs text-brand-200 mt-0.5">Staff Dashboard</div>
-              </div>
+          <aside className="hidden sm:flex w-64 bg-[#FAF8F4] border-r border-[#E9EAEA] flex-col flex-shrink-0">
+            <div className="p-5 flex items-center gap-3 border-b border-[#E9EAEA]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/patch-premium-finance-logo.svg" alt="Patch Premium Finance" style={{ height: '52px', width: 'auto' }} className="flex-shrink-0" />
             </div>
 
             <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
@@ -175,8 +167,8 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
                         href={href}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
                             active
-                                ? "bg-white/15 text-white font-medium"
-                                : "text-white/60 hover:bg-white/10 hover:text-white"
+                                ? "bg-[#F1F1F1] text-[#1A1A1A] font-medium border-l-2 border-[#FF7D55]"
+                                : "text-[#656B6B] hover:bg-[#F1F1F1] hover:text-[#1A1A1A]"
                         }`}
                     >
                       <Icon className="w-5 h-5" />
@@ -187,8 +179,8 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 
               {isAdmin && (
                   <>
-                    <div className="pt-3 mt-3 border-t border-white/10">
-                      <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-white/30">
+                    <div className="pt-3 mt-3 border-t border-[#E9EAEA]">
+                      <div className="px-3 py-1 text-[12px] uppercase tracking-[0.08em] font-medium text-[#A7AAAA]">
                         Administration
                       </div>
                     </div>
@@ -200,8 +192,8 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
                               href={href}
                               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
                                   active
-                                      ? "bg-white/15 text-white font-medium"
-                                      : "text-white/60 hover:bg-white/10 hover:text-white"
+                                      ? "bg-[#F1F1F1] text-[#1A1A1A] font-medium border-l-2 border-[#FF7D55]"
+                                      : "text-[#656B6B] hover:bg-[#F1F1F1] hover:text-[#1A1A1A]"
                               }`}
                           >
                             <Icon className="w-5 h-5" />
@@ -213,20 +205,20 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
               )}
             </nav>
 
-            <div className="p-4 border-t border-white/10">
+            <div className="p-4 border-t border-[#E9EAEA]">
               <UsageIndicator />
-              <div className="text-xs text-white/40 mb-2 mt-3">{email}</div>
+              <div className="text-xs text-[#A7AAAA] mb-2 mt-3">{email}</div>
               <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition"
+                  className="flex items-center gap-2 text-sm text-[#656B6B] hover:text-[#1A1A1A] transition"
               >
-                <LogOut className="w-4 h-4" /> Sign Out
+                <LogOut className="w-4 h-4" /> Sign out
               </button>
             </div>
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto bg-gray-50">
+          <main className="flex-1 overflow-auto bg-[#FAF8F4]">
             <div className="max-w-5xl mx-auto px-4 pt-4">
               <NotificationBanner />
             </div>

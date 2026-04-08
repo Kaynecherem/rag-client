@@ -5,8 +5,11 @@ import Auth0ProviderWrapper from "@/components/Auth0ProviderWrapper";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "Patch - Policy Intelligence Platform",
-    description: "AI-powered policy intelligence, powered by Patch",
+    title: "Patch Premium Finance — Policy Intelligence",
+    description: "AI-powered policy intelligence, powered by Patch Premium Finance",
+    icons: {
+        icon: "/favicon.svg",
+    },
 };
 
 export default function RootLayout({

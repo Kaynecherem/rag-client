@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { useAuth } from "@/lib/auth-context";
 import NotificationBanner from "@/components/NotificationBanner";
 import ImpersonationBanner from "@/components/ImpersonationBanner";
@@ -40,21 +39,20 @@ export default function PolicyholderLayout({ children }: { children: React.React
   }
 
   return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-[#FAF8F4]">
         {/* Impersonation Banner — shown when viewing as superadmin */}
         <ImpersonationBanner />
 
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <header className="bg-white border-b border-[#E9EAEA] sticky top-0 z-40">
           <div className="max-w-4xl mx-auto px-3 sm:px-4 flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden">
-                <Image src="/patch-logo-blue.png" alt="Patch" width={36} height={36} className="w-full h-full object-cover" />
-              </div>
-              <div className="hidden sm:block">
-                <div className="font-semibold text-sm text-gray-900">Policy Assistant</div>
-                <div className="text-xs text-gray-500">Policy: {policyNumber}</div>
+            <div className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/patch-premium-finance-logo.svg" alt="Patch Premium Finance" style={{ height: '48px', width: 'auto' }} />
+              <div className="hidden sm:block border-l border-[#E9EAEA] pl-3">
+                <div className="font-medium text-sm text-[#1A1A1A]">Policy assistant</div>
+                <div className="text-xs text-[#656B6B]">Policy: {policyNumber}</div>
               </div>
             </div>
 
@@ -68,8 +66,8 @@ export default function PolicyholderLayout({ children }: { children: React.React
                         href={href}
                         className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm transition ${
                             active
-                                ? "bg-brand-50 text-brand-700 font-medium"
-                                : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                                ? "bg-[#F1F1F1] text-[#1A1A1A] font-medium"
+                                : "text-[#656B6B] hover:bg-[#F1F1F1] hover:text-[#1A1A1A]"
                         }`}
                     >
                       <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -83,10 +81,10 @@ export default function PolicyholderLayout({ children }: { children: React.React
             {/* Sign Out */}
             <button
                 onClick={handleSignOut}
-                className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-gray-500 hover:text-gray-700 transition"
+                className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#656B6B] hover:text-[#1A1A1A] transition"
             >
               <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Sign Out</span>
+              <span className="hidden sm:inline">Sign out</span>
             </button>
           </div>
         </header>

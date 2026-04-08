@@ -16,7 +16,6 @@ import { useAuth } from "@/lib/auth-context";
 import { useTenant } from "@/lib/tenant-context";
 import { verifyPolicyholder, staffAuth0Login } from "@/lib/api";
 import { User, Building2, Loader2 } from "lucide-react";
-import Image from "next/image";
 
 interface TenantOption {
   tenant_id: string;
@@ -244,41 +243,40 @@ function AuthPage() {
 
   if (!hydrated || auth0Loading) {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="animate-pulse text-gray-400">Loading...</div>
+        <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4]">
+          <div className="animate-pulse text-[#A7AAAA]">Loading...</div>
         </div>
     );
   }
 
   return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#FAF8F4] flex items-center justify-center px-4">
         <div className="w-full max-w-md">
-          {/* Logo — Patch Blue */}
+          {/* Logo — Patch Premium Finance */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-4">
-              <Image
-                  src="/patch-logo-blue.png"
-                  alt="Patch"
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover"
+            <div className="mx-auto mb-4" style={{ height: '64px' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                  src="/patch-premium-finance-logo.svg"
+                  alt="Patch Premium Finance"
+                  style={{ height: '64px', width: 'auto' }}
+                  className="mx-auto"
               />
             </div>
-            <p className="text-xs uppercase tracking-[0.15em] text-brand-600 mt-2">
-              Powered by Patch
+            <p className="text-[#656B6B] mt-1 text-[15px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Policy Intelligence
             </p>
-            <p className="text-gray-500 mt-1 text-sm">Policy Intelligence Platform</p>
           </div>
 
           {/* ── TENANT PICKER (shown when multi-tenant) ── */}
           {tenantOptions && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+              <div className="bg-white rounded-lg shadow-sm border border-[#E9EAEA] p-6 space-y-4">
                 <div className="text-center space-y-1">
-                  <Building2 className="w-10 h-10 text-brand-600 mx-auto" />
-                  <h2 className="text-lg font-semibold text-gray-800">
+                  <Building2 className="w-10 h-10 text-[#2C3030] mx-auto" />
+                  <h2 className="text-lg font-medium text-[#1A1A1A]">
                     Select your agency
                   </h2>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[#656B6B]">
                     Your account is linked to multiple agencies.
                   </p>
                 </div>
@@ -289,13 +287,13 @@ function AuthPage() {
                           key={t.tenant_id}
                           onClick={() => handleTenantSelect(t.tenant_id)}
                           disabled={loading}
-                          className="w-full flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-brand-400 hover:bg-brand-50 transition-colors disabled:opacity-50"
+                          className="w-full flex items-center justify-between p-4 rounded-lg border border-[#E9EAEA] hover:border-[#2C3030] hover:bg-[#F1F1F1] transition-colors disabled:opacity-50"
                       >
                         <div className="text-left">
-                          <div className="font-medium text-gray-900">{t.tenant_name}</div>
-                          <div className="text-xs text-gray-500 capitalize">Role: {t.role}</div>
+                          <div className="font-medium text-[#1A1A1A]">{t.tenant_name}</div>
+                          <div className="text-xs text-[#656B6B] capitalize">Role: {t.role}</div>
                         </div>
-                        <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-5 h-5 text-[#A7AAAA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
@@ -308,13 +306,13 @@ function AuthPage() {
                       setPendingAccessToken(null);
                       setPendingEmail(null);
                     }}
-                    className="w-full text-sm text-gray-500 hover:text-gray-700"
+                    className="w-full text-sm text-[#656B6B] hover:text-[#1A1A1A]"
                 >
                   Cancel
                 </button>
 
                 {error && (
-                    <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                    <div className="text-sm text-[#E52431] bg-red-50 border border-red-200 rounded-lg px-4 py-3">
                       {error}
                     </div>
                 )}
@@ -325,23 +323,23 @@ function AuthPage() {
           {!tenantOptions && (
               <>
                 {/* Mode Toggle */}
-                <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
+                <div className="flex bg-[#F1F1F1] rounded-lg p-1 mb-6">
                   <button
                       onClick={() => { setMode("staff"); setError(""); }}
-                      className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition ${
+                      className={`flex-1 py-2.5 text-[15px] font-medium rounded-md transition ${
                           mode === "staff"
-                              ? "bg-white text-brand-700 shadow-sm"
-                              : "text-gray-500 hover:text-gray-700"
+                              ? "bg-white text-[#1A1A1A] shadow-sm"
+                              : "text-[#656B6B] hover:text-[#1A1A1A]"
                       }`}
                   >
-                    Staff Login
+                    Staff login
                   </button>
                   <button
                       onClick={() => { setMode("policyholder"); setError(""); }}
-                      className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition ${
+                      className={`flex-1 py-2.5 text-[15px] font-medium rounded-md transition ${
                           mode === "policyholder"
-                              ? "bg-white text-brand-700 shadow-sm"
-                              : "text-gray-500 hover:text-gray-700"
+                              ? "bg-white text-[#1A1A1A] shadow-sm"
+                              : "text-[#656B6B] hover:text-[#1A1A1A]"
                       }`}
                   >
                     Policyholder
@@ -349,36 +347,36 @@ function AuthPage() {
                 </div>
 
                 {/* Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-[#E9EAEA] p-6">
                   {mode === "staff" ? (
                       <div>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-2">Staff Login</h2>
-                        <p className="text-sm text-gray-500 mb-6">
+                        <h2 className="text-lg font-medium text-[#1A1A1A] mb-2">Staff login</h2>
+                        <p className="text-sm text-[#656B6B] mb-6">
                           Sign in with your organization credentials to manage policies and agency documents.
                         </p>
 
                         <button
                             onClick={handleStaffLogin}
                             disabled={loading}
-                            className="w-full flex items-center justify-center gap-2 bg-brand-600 text-white py-3 rounded-xl font-medium hover:bg-brand-700 disabled:opacity-50 transition"
+                            className="w-full flex items-center justify-center gap-2 bg-[#2C3030] text-white py-3 rounded-lg font-medium text-[15px] hover:bg-[#394040] disabled:opacity-50 transition min-h-[44px]"
                         >
                           {loading ? (
                               <><Loader2 className="w-5 h-5 animate-spin" /> Signing in...</>
                           ) : (
-                              "Sign In with SSO"
+                              "Sign in with SSO"
                           )}
                         </button>
 
                         {error && mode === "staff" && (
-                            <div className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                            <div className="mt-4 text-sm text-[#E52431] bg-red-50 border border-red-200 rounded-lg px-4 py-3">
                               {error}
                             </div>
                         )}
                       </div>
                   ) : (
                       <form onSubmit={handlePolicyholderVerify}>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-2">Policy Access</h2>
-                        <p className="text-sm text-gray-500 mb-6">
+                        <h2 className="text-lg font-medium text-[#1A1A1A] mb-2">Policy access</h2>
+                        <p className="text-sm text-[#656B6B] mb-6">
                           Verify your identity to access your policy information.
                         </p>
 
@@ -386,8 +384,8 @@ function AuthPage() {
                           {/* Show tenant ID field only if not resolved from subdomain */}
                           {!resolvedTenantId && !slug && (
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Agency Code
+                                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                                  Agency code
                                 </label>
                                 <input
                                     type="text"
@@ -395,14 +393,14 @@ function AuthPage() {
                                     onChange={(e) => setTenantId(e.target.value)}
                                     placeholder="Your agency code"
                                     required
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm"
+                                    className="w-full px-4 py-3 border border-[#E9EAEA] rounded focus:border-[#1A1A1A] focus:ring-0 outline-none text-sm placeholder-[#A7AAAA]"
                                 />
                               </div>
                           )}
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Policy Number
+                            <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                              Policy number
                             </label>
                             <input
                                 type="text"
@@ -410,7 +408,7 @@ function AuthPage() {
                                 onChange={(e) => setPolicyNumber(e.target.value)}
                                 placeholder="e.g., POL-001"
                                 required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm"
+                                className="w-full px-4 py-3 border border-[#E9EAEA] rounded focus:border-[#1A1A1A] focus:ring-0 outline-none text-sm placeholder-[#A7AAAA]"
                             />
                           </div>
 
@@ -418,10 +416,10 @@ function AuthPage() {
                             <button
                                 type="button"
                                 onClick={() => setVerifyBy("person")}
-                                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm border transition ${
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm border transition min-h-[44px] ${
                                     verifyBy === "person"
-                                        ? "border-brand-500 bg-brand-50 text-brand-700"
-                                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                                        ? "border-[#2C3030] bg-[#F1F1F1] text-[#1A1A1A]"
+                                        : "border-[#E9EAEA] text-[#656B6B] hover:border-[#A7AAAA]"
                                 }`}
                             >
                               <User className="w-4 h-4" /> Person
@@ -429,10 +427,10 @@ function AuthPage() {
                             <button
                                 type="button"
                                 onClick={() => setVerifyBy("company")}
-                                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm border transition ${
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm border transition min-h-[44px] ${
                                     verifyBy === "company"
-                                        ? "border-brand-500 bg-brand-50 text-brand-700"
-                                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                                        ? "border-[#2C3030] bg-[#F1F1F1] text-[#1A1A1A]"
+                                        : "border-[#E9EAEA] text-[#656B6B] hover:border-[#A7AAAA]"
                                 }`}
                             >
                               <Building2 className="w-4 h-4" /> Company
@@ -441,8 +439,8 @@ function AuthPage() {
 
                           {verifyBy === "person" ? (
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Last Name
+                                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                                  Last name
                                 </label>
                                 <input
                                     type="text"
@@ -450,13 +448,13 @@ function AuthPage() {
                                     onChange={(e) => setLastName(e.target.value)}
                                     placeholder="Your last name"
                                     required
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm"
+                                    className="w-full px-4 py-3 border border-[#E9EAEA] rounded focus:border-[#1A1A1A] focus:ring-0 outline-none text-sm placeholder-[#A7AAAA]"
                                 />
                               </div>
                           ) : (
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Company Name
+                                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                                  Company name
                                 </label>
                                 <input
                                     type="text"
@@ -464,7 +462,7 @@ function AuthPage() {
                                     onChange={(e) => setCompanyName(e.target.value)}
                                     placeholder="Your company name"
                                     required
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm"
+                                    className="w-full px-4 py-3 border border-[#E9EAEA] rounded focus:border-[#1A1A1A] focus:ring-0 outline-none text-sm placeholder-[#A7AAAA]"
                                 />
                               </div>
                           )}
@@ -472,18 +470,18 @@ function AuthPage() {
                           <button
                               type="submit"
                               disabled={loading}
-                              className="w-full flex items-center justify-center gap-2 bg-brand-600 text-white py-3 rounded-xl font-medium hover:bg-brand-700 disabled:opacity-50 transition"
+                              className="w-full flex items-center justify-center gap-2 bg-[#2C3030] text-white py-3 rounded-lg font-medium text-[15px] hover:bg-[#394040] disabled:opacity-50 transition min-h-[44px]"
                           >
                             {loading ? (
                                 <><Loader2 className="w-5 h-5 animate-spin" /> Verifying...</>
                             ) : (
-                                "Verify & Access Policy"
+                                "Verify & access policy"
                             )}
                           </button>
                         </div>
 
                         {error && mode === "policyholder" && (
-                            <div className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                            <div className="mt-4 text-sm text-[#E52431] bg-red-50 border border-red-200 rounded-lg px-4 py-3">
                               {error}
                             </div>
                         )}
@@ -493,8 +491,8 @@ function AuthPage() {
               </>
           )}
 
-          <p className="text-xs text-gray-400 mt-6 text-center">
-            Powered by Patch — AI-driven policy intelligence
+          <p className="text-xs text-[#A7AAAA] mt-6 text-center">
+            Powered by Patch Premium Finance
           </p>
         </div>
       </div>
