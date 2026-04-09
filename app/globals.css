@@ -4,9 +4,47 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-page: 250 248 244;        /* #FAF8F4 */
+  --color-card: 255 255 255;        /* #FFFFFF */
+  --color-surface: 241 241 241;     /* #F1F1F1 */
+  --color-border: 233 234 234;      /* #E9EAEA */
+  --color-input-border: 233 234 234;/* #E9EAEA */
+  --color-heading: 26 26 26;        /* #1A1A1A */
+  --color-body: 26 26 26;           /* #1A1A1A */
+  --color-secondary: 101 107 107;   /* #656B6B */
+  --color-muted: 167 170 170;       /* #A7AAAA */
+  --color-faint: 167 170 170;       /* #A7AAAA */
+  --color-accent: 255 125 85;       /* #FF7D55 */
+  --color-accent-hover: 255 145 110;
+  --color-on-accent: 255 255 255;
+  --color-primary-btn: 44 48 48;    /* #2C3030 */
+  --color-primary-btn-hover: 57 64 64; /* #394040 */
+  --color-overlay: 0 0 0;
+}
+
+.dark {
+  --color-page: 22 20 21;           /* #161415 */
+  --color-card: 30 29 28;           /* #1E1D1C */
+  --color-surface: 44 48 48;        /* #2C3030 */
+  --color-border: 44 48 48;         /* #2C3030 */
+  --color-input-border: 58 58 58;
+  --color-heading: 250 248 244;     /* #FAF8F4 */
+  --color-body: 212 212 212;
+  --color-secondary: 167 170 170;   /* #A7AAAA */
+  --color-muted: 101 107 107;       /* #656B6B */
+  --color-faint: 80 80 80;
+  --color-accent: 255 125 85;       /* #FF7D55 */
+  --color-accent-hover: 255 145 110;
+  --color-on-accent: 22 20 21;
+  --color-primary-btn: 255 125 85;  /* accent as primary in dark */
+  --color-primary-btn-hover: 255 145 110;
+  --color-overlay: 0 0 0;
+}
+
 body {
-  @apply bg-[#FAF8F4] text-[#1A1A1A] antialiased;
   font-family: 'Inter', sans-serif;
+  @apply bg-page text-body antialiased;
 }
 
 /* Chat message animation */

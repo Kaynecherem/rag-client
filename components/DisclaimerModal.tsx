@@ -64,14 +64,14 @@ export default function DisclaimerModal({ onAccept }: Props) {
   };
 
   return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay/50">
+        <div className="bg-card rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-xl">ℹ️</span>
-            <h2 className="text-lg font-semibold text-gray-900">Important Notice</h2>
+            <h2 className="text-lg font-semibold text-heading">Important Notice</h2>
           </div>
 
-          <div className="text-sm text-gray-600 leading-relaxed mb-6 max-h-60 overflow-y-auto">
+          <div className="text-sm text-secondary leading-relaxed mb-6 max-h-60 overflow-y-auto">
             {text.split("\n").map((paragraph, i) => (
                 <p key={i} className={i > 0 ? "mt-3" : ""}>
                   {paragraph}

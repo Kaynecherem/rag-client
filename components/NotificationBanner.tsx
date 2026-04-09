@@ -95,11 +95,11 @@ export default function NotificationBanner() {
                 <span className="text-base flex-shrink-0 mt-0.5">{style.icon}</span>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-medium ${style.text}`}>{n.title}</div>
-                  <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">{n.message}</p>
+                  <p className="text-xs text-secondary mt-0.5 leading-relaxed">{n.message}</p>
                 </div>
                 <button
                     onClick={() => dismiss(n.id)}
-                    className="text-gray-400 hover:text-gray-600 text-sm flex-shrink-0"
+                    className="text-muted hover:text-secondary text-sm flex-shrink-0"
                 >
                   ✕
                 </button>

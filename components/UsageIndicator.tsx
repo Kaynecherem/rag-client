@@ -62,7 +62,7 @@ export default function UsageIndicator() {
   const barColor =
       pct >= 90 ? "bg-red-400" : pct >= 70 ? "bg-amber-400" : "bg-emerald-400";
   const textColor =
-      pct >= 90 ? "text-red-400" : pct >= 70 ? "text-amber-400" : "text-white/50";
+      pct >= 90 ? "text-red-500" : pct >= 70 ? "text-amber-500" : "text-secondary";
 
   const formatLimit = (used: number, limit: number) =>
       limit === 0 ? `${used} / ∞` : `${used} / ${limit}`;
@@ -74,27 +74,27 @@ export default function UsageIndicator() {
             className="w-full text-left"
         >
           <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] text-white/40 uppercase tracking-wider">
+          <span className="text-[10px] text-muted uppercase tracking-wider">
             {usage.plan_name}
           </span>
             <span className={`text-[10px] ${textColor}`}>
             {pct}%
           </span>
           </div>
-          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-surface rounded-full overflow-hidden">
             <div
                 className={`h-full ${barColor} rounded-full transition-all`}
                 style={{ width: `${Math.min(pct, 100)}%` }}
             />
           </div>
-          <div className="text-[10px] text-white/30 mt-1">
+          <div className="text-[10px] text-muted mt-1">
             {usage.queries.used} / {usage.queries.limit} queries
           </div>
         </button>
 
         {expanded && (
-            <div className="mt-3 space-y-2 border-t border-white/10 pt-3">
-              <div className="text-[10px] text-white/30">
+            <div className="mt-3 space-y-2 border-t border-border-default pt-3">
+              <div className="text-[10px] text-faint">
                 Period: {usage.period}
               </div>
               {[
@@ -103,14 +103,14 @@ export default function UsageIndicator() {
                 { label: "Staff", used: usage.staff.used, limit: usage.staff.limit },
               ].map((item) => (
                   <div key={item.label} className="flex items-center justify-between text-[10px]">
-                    <span className="text-white/40">{item.label}</span>
-                    <span className="text-white/50">
+                    <span className="text-secondary">{item.label}</span>
+                    <span className="text-body">
                 {formatLimit(item.used, item.limit)}
               </span>
                   </div>
               ))}
               {usage.at_risk && (
-                  <div className="text-[10px] text-amber-400 bg-amber-400/10 rounded px-2 py-1 mt-1">
+                  <div className="text-[10px] text-amber-500 bg-amber-500/10 rounded px-2 py-1 mt-1">
                     Approaching query limit
                   </div>
               )}

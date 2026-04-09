@@ -171,8 +171,8 @@ export default function StaffQueryPage() {
       if (el) {
         setTimeout(() => {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
-          el.classList.add("ring-2", "ring-brand-400", "ring-offset-2");
-          setTimeout(() => el.classList.remove("ring-2", "ring-brand-400", "ring-offset-2"), 2000);
+          el.classList.add("ring-2", "ring-accent", "ring-offset-2");
+          setTimeout(() => el.classList.remove("ring-2", "ring-accent", "ring-offset-2"), 2000);
         }, 100);
         scrollTargetRef.current = null;
       }
@@ -279,20 +279,20 @@ export default function StaffQueryPage() {
   return (
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="bg-white border-b px-4 sm:px-6 py-3 flex-shrink-0">
-          <h1 className="text-base sm:text-lg font-semibold text-gray-900">Ask Questions</h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+        <div className="bg-card border-b px-4 sm:px-6 py-3 flex-shrink-0">
+          <h1 className="text-base sm:text-lg font-semibold text-heading">Ask Questions</h1>
+          <p className="text-xs sm:text-sm text-muted mt-0.5">
             Query policies or agency communications with AI-powered search
           </p>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-3 relative z-10">
             {/* Query Type Toggle */}
-            <div className="flex bg-gray-100 rounded-lg p-1 self-start">
+            <div className="flex bg-surface rounded-lg p-1 self-start">
               <button
                   onClick={() => setQueryType("policy")}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition ${
                       queryType === "policy"
-                          ? "bg-white text-brand-700 shadow font-medium"
-                          : "text-gray-500 hover:text-gray-700"
+                          ? "bg-card text-accent shadow font-medium"
+                          : "text-muted hover:text-heading"
                   }`}
               >
                 <FileText className="w-3.5 h-3.5" /> Policy
@@ -301,8 +301,8 @@ export default function StaffQueryPage() {
                   onClick={() => setQueryType("communications")}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition ${
                       queryType === "communications"
-                          ? "bg-white text-brand-700 shadow font-medium"
-                          : "text-gray-500 hover:text-gray-700"
+                          ? "bg-card text-accent shadow font-medium"
+                          : "text-muted hover:text-heading"
                   }`}
               >
                 <FolderOpen className="w-3.5 h-3.5" /> Comms
@@ -314,41 +314,41 @@ export default function StaffQueryPage() {
                 <div className="relative" ref={dropdownRef}>
                   <button
                       onClick={() => setPolicyDropdownOpen(!policyDropdownOpen)}
-                      className="w-full sm:w-64 flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50 transition"
+                      className="w-full sm:w-64 flex items-center justify-between px-3 py-2 border border-border-default rounded-lg text-sm bg-card hover:bg-surface transition"
                   >
                     <span className="truncate">{policyNumber || "Select policy..."}</span>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition ${policyDropdownOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown className={`w-4 h-4 text-muted transition ${policyDropdownOpen ? "rotate-180" : ""}`} />
                   </button>
 
                   {policyDropdownOpen && (
-                      <div className="absolute top-full left-0 mt-1 w-full sm:w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                      <div className="absolute top-full left-0 mt-1 w-full sm:w-80 bg-card border border-border-default rounded-xl shadow-lg z-50 overflow-hidden">
                         <div className="p-2 border-b border-gray-100">
                           <div className="relative">
-                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted" />
                             <input
                                 type="text"
                                 value={policySearch}
                                 onChange={(e) => setPolicySearch(e.target.value)}
                                 placeholder="Search policies..."
-                                className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+                                className="w-full pl-8 pr-3 py-1.5 text-sm border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none"
                                 autoFocus
                                 onClick={(e) => e.stopPropagation()}
                             />
                             {policiesLoading && (
-                                <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-brand-500 animate-spin" />
+                                <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-accent animate-spin" />
                             )}
                           </div>
                         </div>
                         <div className="overflow-auto max-h-48">
                           {filteredPolicies.length === 0 ? (
-                              <div className="px-3 py-4 text-sm text-gray-400 text-center">No policies found</div>
+                              <div className="px-3 py-4 text-sm text-muted text-center">No policies found</div>
                           ) : (
                               filteredPolicies.map((p) => (
                                   <button
                                       key={p.number}
                                       onClick={() => handlePolicySwitch(p.number)}
-                                      className={`w-full text-left px-3 py-2 text-sm hover:bg-brand-50 transition truncate ${
-                                          p.number === policyNumber ? "bg-brand-50 text-brand-700 font-medium" : "text-gray-700"
+                                      className={`w-full text-left px-3 py-2 text-sm hover:bg-accent/10 transition truncate ${
+                                          p.number === policyNumber ? "bg-accent/10 text-accent font-medium" : "text-heading"
                                       }`}
                                   >
                                     {p.label}
@@ -365,7 +365,7 @@ export default function StaffQueryPage() {
                 <select
                     value={commType}
                     onChange={(e) => setCommType(e.target.value)}
-                    className="w-full sm:w-48 text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 outline-none bg-white"
+                    className="w-full sm:w-48 text-sm border border-border-default rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent outline-none bg-card"
                 >
                   <option value="">All Types</option>
                   <option value="letter">Letters</option>
@@ -390,20 +390,20 @@ export default function StaffQueryPage() {
             )}
 
             {conversationLoading && (
-                <div className="flex items-center justify-center py-8 text-gray-400">
+                <div className="flex items-center justify-center py-8 text-muted">
                   <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading conversation...
                 </div>
             )}
 
             {!conversationLoading && messages.length === 0 && !limitError && (
-                <div className="flex flex-col items-center justify-center h-full text-gray-400 px-4 min-h-[300px]">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-brand-50 rounded-2xl flex items-center justify-center mb-4">
-                    <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-brand-600" />
+                <div className="flex flex-col items-center justify-center h-full text-muted px-4 min-h-[300px]">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-accent/10 rounded-2xl flex items-center justify-center mb-4">
+                    <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-accent" />
                   </div>
-                  <p className="text-base sm:text-lg font-semibold text-gray-900 text-center">
+                  <p className="text-base sm:text-lg font-semibold text-heading text-center">
                     {queryType === "policy" ? "No questions yet for this policy" : "Ask anything about your communications"}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1 text-center">
+                  <p className="text-sm text-muted mt-1 text-center">
                     {queryType === "policy"
                         ? `Start a conversation about ${policyNumber}`
                         : "Searching across agency communications"}
@@ -418,31 +418,31 @@ export default function StaffQueryPage() {
                     className={`animate-fade-in transition-all duration-300 rounded-xl ${msg.type === "user" ? "flex justify-end" : ""}`}
                 >
                   {msg.type === "user" ? (
-                      <div className="bg-brand-600 text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[85%] sm:max-w-md text-sm break-words">
+                      <div className="bg-primary-btn text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[85%] sm:max-w-md text-sm break-words">
                         {msg.text}
                       </div>
                   ) : (
                       <div className="max-w-[95%] sm:max-w-xl">
-                        <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4 shadow-sm">
-                          <div className="text-sm text-gray-800 leading-relaxed break-words">
+                        <div className="bg-card border border-border-default rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4 shadow-sm">
+                          <div className="text-sm text-heading leading-relaxed break-words">
                             <MarkdownResponse content={msg.text} />
                           </div>
 
                           {msg.result && msg.result.citations.length > 0 && (
                               <div className="mt-3 sm:mt-4 pt-3 border-t border-gray-100">
-                                <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-2">
+                                <div className="flex items-center gap-1.5 text-xs font-medium text-muted mb-2">
                                   <BookOpen className="w-3.5 h-3.5" /> Sources
                                 </div>
                                 <div className="space-y-1.5">
                                   {msg.result.citations.slice(0, 3).map((c, i) => (
-                                      <div key={i} className="text-xs bg-gray-50 rounded-lg px-3 py-2 text-gray-600">
-                              <span className="font-medium text-gray-700">
+                                      <div key={i} className="text-xs bg-page rounded-lg px-3 py-2 text-secondary">
+                              <span className="font-medium text-heading">
                                 Page {c.page}{c.section ? `, ${c.section}` : ""}
                               </span>
-                                        <span className="text-gray-400 ml-2">
+                                        <span className="text-muted ml-2">
                                 ({(c.similarity_score * 100).toFixed(0)}% match)
                               </span>
-                                        <p className="mt-0.5 text-gray-500 line-clamp-2 break-words">{c.text}</p>
+                                        <p className="mt-0.5 text-muted line-clamp-2 break-words">{c.text}</p>
                                       </div>
                                   ))}
                                 </div>
@@ -450,7 +450,7 @@ export default function StaffQueryPage() {
                           )}
 
                           {msg.result && (
-                              <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-gray-400">
+                              <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted">
                                 <span>Confidence: {(msg.result.confidence * 100).toFixed(0)}%</span>
                                 <span className="hidden sm:inline">·</span>
                                 <span>{msg.result.latency_ms}ms</span>
@@ -464,8 +464,8 @@ export default function StaffQueryPage() {
 
             {loading && (
                 <div className="animate-fade-in">
-                  <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-5 py-4 shadow-sm inline-block">
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <div className="bg-card border border-border-default rounded-2xl rounded-bl-md px-5 py-4 shadow-sm inline-block">
+                    <div className="flex items-center gap-2 text-sm text-muted">
                       <Loader2 className="w-4 h-4 animate-spin" /> Searching documents...
                     </div>
                   </div>
@@ -476,7 +476,7 @@ export default function StaffQueryPage() {
         </div>
 
         {/* Input */}
-        <div className="bg-white border-t flex-shrink-0">
+        <div className="bg-card border-t flex-shrink-0">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
             <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
               <input
@@ -491,12 +491,12 @@ export default function StaffQueryPage() {
                             : "Search agency communications..."
                   }
                   disabled={loading || !!limitError}
-                  className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm disabled:opacity-50"
+                  className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 border border-border-default rounded-xl focus:ring-2 focus:ring-accent focus:border-accent outline-none text-sm disabled:opacity-50"
               />
               <button
                   type="submit"
                   disabled={loading || !question.trim() || !!limitError}
-                  className="bg-brand-600 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl hover:bg-brand-700 disabled:opacity-50 transition flex-shrink-0"
+                  className="bg-primary-btn text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl hover:bg-primary-btn-hover disabled:opacity-50 transition flex-shrink-0"
               >
                 <Send className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>

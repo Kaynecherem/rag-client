@@ -17,7 +17,7 @@ export default function MarkdownResponse({ content, className = "" }: MarkdownRe
   const blocks = parseBlocks(content);
 
   return (
-    <div className={`text-sm text-gray-800 leading-relaxed space-y-2 ${className}`}>
+    <div className={`text-sm text-heading leading-relaxed space-y-2 ${className}`}>
       {blocks.map((block, i) => renderBlock(block, i))}
     </div>
   );
@@ -99,8 +99,8 @@ function renderBlock(block: Block, key: number): React.ReactNode {
     case "heading":
       const Tag = block.level <= 2 ? "h3" : "h4";
       const hClass = block.level <= 2
-        ? "font-semibold text-gray-900 text-sm"
-        : "font-medium text-gray-800 text-sm";
+        ? "font-semibold text-heading text-sm"
+        : "font-medium text-heading text-sm";
       return <Tag key={key} className={hClass}>{renderInline(block.text)}</Tag>;
 
     case "list":
@@ -111,7 +111,7 @@ function renderBlock(block: Block, key: number): React.ReactNode {
       return (
         <ListTag key={key} className={listClass}>
           {block.items.map((item, j) => (
-            <li key={j} className="text-gray-800 text-sm leading-relaxed">
+            <li key={j} className="text-heading text-sm leading-relaxed">
               {renderInline(item)}
             </li>
           ))}
@@ -119,7 +119,7 @@ function renderBlock(block: Block, key: number): React.ReactNode {
       );
 
     case "paragraph":
-      return <p key={key} className="text-gray-800 break-words">{renderInline(block.text)}</p>;
+      return <p key={key} className="text-heading break-words">{renderInline(block.text)}</p>;
 
     default:
       return null;
@@ -175,14 +175,14 @@ function renderInline(text: string): React.ReactNode {
     const inner = match[1];
     switch (type) {
       case "bold":
-        parts.push(<strong key={keyIdx++} className="font-semibold text-gray-900">{inner}</strong>);
+        parts.push(<strong key={keyIdx++} className="font-semibold text-heading">{inner}</strong>);
         break;
       case "italic":
         parts.push(<em key={keyIdx++} className="italic">{inner}</em>);
         break;
       case "code":
         parts.push(
-          <code key={keyIdx++} className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-xs font-mono">
+          <code key={keyIdx++} className="bg-surface text-heading px-1 py-0.5 rounded text-xs font-mono">
             {inner}
           </code>
         );

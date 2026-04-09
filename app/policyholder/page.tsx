@@ -250,12 +250,12 @@ export default function PolicyholderPage() {
 
         <div className="flex flex-col" style={{ height: "calc(100vh - 57px)" }}>
           {/* Policy Actions Bar */}
-          <div className="bg-white border-b">
+          <div className="bg-card border-b">
             <div className="max-w-3xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-end gap-2">
               <button
                   onClick={handleViewPolicy}
                   disabled={policyLoading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-secondary hover:bg-surface rounded-lg transition"
               >
                 {policyLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
                 {showPolicyViewer ? "Close" : "Read Policy"}
@@ -263,7 +263,7 @@ export default function PolicyholderPage() {
               <button
                   onClick={handleDownload}
                   disabled={downloading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm text-secondary hover:bg-surface rounded-lg transition"
               >
                 {downloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                 Download PDF
@@ -285,20 +285,20 @@ export default function PolicyholderPage() {
                   )}
 
                   {conversationLoading && (
-                      <div className="flex items-center justify-center py-8 text-gray-400">
+                      <div className="flex items-center justify-center py-8 text-muted">
                         <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading your conversation...
                       </div>
                   )}
 
                   {!conversationLoading && messages.length === 0 && !limitError && (
                       <div className="text-center py-8 sm:py-12">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                          <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-brand-600" />
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-accent" />
                         </div>
-                        <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+                        <h2 className="text-base sm:text-lg font-semibold text-heading">
                           Welcome! Ask me about your policy.
                         </h2>
-                        <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+                        <p className="text-sm text-muted mt-1 max-w-md mx-auto">
                           I can help you understand your coverage, deductibles, exclusions, and more.
                         </p>
                         <div className="mt-5 sm:mt-6 flex flex-wrap gap-2 justify-center max-w-lg mx-auto">
@@ -306,7 +306,7 @@ export default function PolicyholderPage() {
                               <button
                                   key={sq}
                                   onClick={() => handleSubmit(sq)}
-                                  className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs sm:text-sm text-gray-600 hover:bg-brand-50 hover:border-brand-200 hover:text-brand-700 transition"
+                                  className="px-3 py-1.5 bg-card border border-border-default rounded-full text-xs sm:text-sm text-secondary hover:bg-accent/10 hover:border-brand-200 hover:text-accent transition"
                               >
                                 {sq}
                               </button>
@@ -323,24 +323,24 @@ export default function PolicyholderPage() {
                             className={`animate-fade-in transition-all duration-300 rounded-xl ${msg.type === "user" ? "flex justify-end" : ""}`}
                         >
                           {msg.type === "user" ? (
-                              <div className="bg-brand-600 text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[85%] sm:max-w-md text-sm break-words">
+                              <div className="bg-primary-btn text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[85%] sm:max-w-md text-sm break-words">
                                 {msg.text}
                               </div>
                           ) : (
                               <div className="max-w-[95%] sm:max-w-xl">
-                                <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4 shadow-sm">
-                                  <div className="text-sm text-gray-800 leading-relaxed break-words">
+                                <div className="bg-card border border-border-default rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4 shadow-sm">
+                                  <div className="text-sm text-heading leading-relaxed break-words">
                                     <MarkdownResponse content={msg.text} />
                                   </div>
                                   {msg.result && msg.result.citations.length > 0 && (
                                       <div className="mt-3 pt-3 border-t border-gray-100">
-                                        <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-2">
+                                        <div className="flex items-center gap-1.5 text-xs font-medium text-muted mb-2">
                                           <BookOpen className="w-3.5 h-3.5" /> Sources
                                         </div>
                                         <div className="space-y-1.5">
                                           {msg.result.citations.slice(0, 3).map((c, i) => (
-                                              <div key={i} className="text-xs bg-gray-50 rounded-lg px-3 py-2 text-gray-600">
-                                      <span className="font-medium text-gray-700">
+                                              <div key={i} className="text-xs bg-page rounded-lg px-3 py-2 text-secondary">
+                                      <span className="font-medium text-heading">
                                         Page {c.page}{c.section ? `, ${c.section}` : ""}
                                       </span>
                                               </div>
@@ -355,8 +355,8 @@ export default function PolicyholderPage() {
                     ))}
                     {loading && (
                         <div className="animate-fade-in">
-                          <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-5 py-4 shadow-sm inline-block">
-                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                          <div className="bg-card border border-border-default rounded-2xl rounded-bl-md px-5 py-4 shadow-sm inline-block">
+                            <div className="flex items-center gap-2 text-sm text-muted">
                               <Loader2 className="w-4 h-4 animate-spin" /> Searching your policy...
                             </div>
                           </div>
@@ -368,7 +368,7 @@ export default function PolicyholderPage() {
               </div>
 
               {/* Input */}
-              <div className="bg-white border-t">
+              <div className="bg-card border-t">
                 <div className="max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
                   <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="flex gap-2 sm:gap-3">
                     <input
@@ -377,17 +377,17 @@ export default function PolicyholderPage() {
                         onChange={(e) => setQuestion(e.target.value)}
                         placeholder={limitError ? "Query limit reached — please contact your agent" : "Ask about your policy..."}
                         disabled={loading || !!limitError}
-                        className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm disabled:opacity-50"
+                        className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 border border-border-default rounded-xl focus:ring-2 focus:ring-accent focus:border-accent outline-none text-sm disabled:opacity-50"
                     />
                     <button
                         type="submit"
                         disabled={loading || !question.trim() || !!limitError}
-                        className="bg-brand-600 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl hover:bg-brand-700 disabled:opacity-50 transition flex-shrink-0"
+                        className="bg-primary-btn text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl hover:bg-primary-btn-hover disabled:opacity-50 transition flex-shrink-0"
                     >
                       <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </form>
-                  <p className="text-xs text-gray-400 mt-2 text-center">
+                  <p className="text-xs text-muted mt-2 text-center">
                     Answers are generated from your policy document. Always verify with your agent for important decisions.
                   </p>
                 </div>
@@ -396,31 +396,31 @@ export default function PolicyholderPage() {
 
             {/* Policy Viewer Sidebar */}
             {showPolicyViewer && (
-                <div className="w-full sm:w-[400px] lg:w-[480px] border-l bg-white flex flex-col overflow-hidden">
-                  <div className="px-4 py-3 border-b flex items-center justify-between bg-gray-50">
-                    <h3 className="font-medium text-sm text-gray-900">Policy Document</h3>
+                <div className="w-full sm:w-[400px] lg:w-[480px] border-l bg-card flex flex-col overflow-hidden">
+                  <div className="px-4 py-3 border-b flex items-center justify-between bg-page">
+                    <h3 className="font-medium text-sm text-heading">Policy Document</h3>
                     <div className="flex items-center gap-2">
                       <button onClick={handleDownload} disabled={downloading}
-                              className="text-xs text-brand-600 hover:text-brand-700 flex items-center gap-1">
+                              className="text-xs text-accent hover:text-accent flex items-center gap-1">
                         <Download className="w-3.5 h-3.5" /> PDF
                       </button>
-                      <button onClick={() => setShowPolicyViewer(false)} className="text-gray-400 hover:text-gray-600">
+                      <button onClick={() => setShowPolicyViewer(false)} className="text-muted hover:text-secondary">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
                   <div className="flex-1 overflow-auto p-4">
                     {policyText.length === 0 ? (
-                        <p className="text-sm text-gray-400 text-center py-8">No content available</p>
+                        <p className="text-sm text-muted text-center py-8">No content available</p>
                     ) : (
                         <div className="space-y-4">
                           {policyText.map((section, i) => (
                               <div key={i} className="text-sm">
                                 {section.section && (
-                                    <h4 className="font-semibold text-gray-800 mb-1 text-xs uppercase tracking-wide">{section.section}</h4>
+                                    <h4 className="font-semibold text-heading mb-1 text-xs uppercase tracking-wide">{section.section}</h4>
                                 )}
-                                {section.page && <span className="text-xs text-gray-400 mb-1 block">Page {section.page}</span>}
-                                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-xs">{section.text}</p>
+                                {section.page && <span className="text-xs text-muted mb-1 block">Page {section.page}</span>}
+                                <p className="text-heading leading-relaxed whitespace-pre-wrap text-xs">{section.text}</p>
                               </div>
                           ))}
                         </div>

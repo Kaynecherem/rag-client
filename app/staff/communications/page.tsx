@@ -165,64 +165,64 @@ export default function CommunicationsPage() {
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto">
-      <h1 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center gap-2">
-        <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-brand-600" /> Communications
+      <h1 className="text-lg sm:text-xl font-semibold text-heading flex items-center gap-2">
+        <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-accent" /> Communications
       </h1>
-      <p className="text-sm text-gray-500 mt-1">Upload and manage agency letters, notes, and records</p>
+      <p className="text-sm text-muted mt-1">Upload and manage agency letters, notes, and records</p>
 
       {/* Upload Mode Toggle */}
       <div className="mt-4 flex gap-2">
         <button onClick={() => setUploadMode("single")}
-          className={`px-3 py-1.5 text-sm rounded-lg transition ${uploadMode === "single" ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+          className={`px-3 py-1.5 text-sm rounded-lg transition ${uploadMode === "single" ? "bg-primary-btn text-white" : "bg-surface text-secondary hover:bg-gray-200"}`}>
           Single Upload
         </button>
         <button onClick={() => setUploadMode("batch")}
-          className={`px-3 py-1.5 text-sm rounded-lg transition ${uploadMode === "batch" ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+          className={`px-3 py-1.5 text-sm rounded-lg transition ${uploadMode === "batch" ? "bg-primary-btn text-white" : "bg-surface text-secondary hover:bg-gray-200"}`}>
           Batch Upload
         </button>
       </div>
 
       {/* Single Upload */}
       {uploadMode === "single" && (
-        <form onSubmit={handleUpload} className="mt-4 bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-          <h2 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Upload className="w-5 h-5 text-brand-600" /> Upload Communication
+        <form onSubmit={handleUpload} className="mt-4 bg-card rounded-xl border border-border-default p-4 sm:p-5">
+          <h2 className="font-medium text-heading mb-4 flex items-center gap-2">
+            <Upload className="w-5 h-5 text-accent" /> Upload Communication
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <label className="block text-sm font-medium text-heading mb-1">Type</label>
               <select value={commType} onChange={(e) => setCommType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-white">
+                className="w-full px-3 py-2 border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none bg-card">
                 {COMM_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">File</label>
+              <label className="block text-sm font-medium text-heading mb-1">File</label>
               <input ref={fileRef} type="file" accept=".pdf,.docx,.txt" required onChange={handleFileChange}
-                className="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100" />
+                className="w-full text-sm text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-accent/10 file:text-accent hover:file:bg-brand-100" />
             </div>
           </div>
           <div className="mt-3">
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-gray-700">Title (optional)</label>
-              <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+              <label className="block text-sm font-medium text-heading">Title (optional)</label>
+              <label className="flex items-center gap-1.5 text-xs text-muted cursor-pointer">
                 <input type="checkbox" checked={useFilenameAsTitle}
                   onChange={(e) => {
                     setUseFilenameAsTitle(e.target.checked);
                     if (e.target.checked && fileRef.current?.files?.[0]) setTitle(fileRef.current.files[0].name.replace(/\.[^/.]+$/, ""));
                   }}
-                  className="rounded border-gray-300 text-brand-600 focus:ring-brand-500" />
+                  className="rounded border-border-default text-accent focus:ring-accent" />
                 Use filename as title
               </label>
             </div>
             <input type="text" value={title}
               onChange={(e) => { setTitle(e.target.value); setUseFilenameAsTitle(false); }}
               placeholder="e.g. Renewal Letter - Smith"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none" />
+              className="w-full px-3 py-2 border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none" />
           </div>
           <div className="mt-4">
             <button type="submit" disabled={uploadLoading}
-              className="w-full sm:w-auto bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
+              className="w-full sm:w-auto bg-primary-btn text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary-btn-hover disabled:opacity-50 transition flex items-center justify-center gap-2">
               {uploadLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Upload className="w-4 h-4" /> Upload</>}
             </button>
           </div>
@@ -231,40 +231,40 @@ export default function CommunicationsPage() {
 
       {/* Batch Upload */}
       {uploadMode === "batch" && (
-        <div className="mt-4 bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-          <h2 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-            <Upload className="w-5 h-5 text-brand-600" /> Batch Upload (up to 20)
+        <div className="mt-4 bg-card rounded-xl border border-border-default p-4 sm:p-5">
+          <h2 className="font-medium text-heading mb-3 flex items-center gap-2">
+            <Upload className="w-5 h-5 text-accent" /> Batch Upload (up to 20)
           </h2>
           <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Type (applied to all)</label>
+            <label className="block text-sm font-medium text-heading mb-1">Type (applied to all)</label>
             <select value={commType} onChange={(e) => setCommType(e.target.value)}
-              className="w-full sm:w-48 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-white">
+              className="w-full sm:w-48 px-3 py-2 border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none bg-card">
               {COMM_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
           <input ref={batchFileRef} type="file" accept=".pdf,.docx,.txt" multiple className="hidden" onChange={handleBatchFilesSelected} />
           <button onClick={handleBatchAdd} disabled={batchFiles.length >= 20}
-            className="mb-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition flex items-center gap-2 disabled:opacity-50">
+            className="mb-3 px-4 py-2 bg-surface hover:bg-gray-200 text-heading text-sm rounded-lg transition flex items-center gap-2 disabled:opacity-50">
             <Plus className="w-4 h-4" /> Add Files
           </button>
           {batchFiles.length > 0 && (
             <div className="space-y-2 mb-4">
               {batchFiles.map((entry, i) => (
-                <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-gray-50 rounded-lg p-3">
-                  <span className="text-sm text-gray-600 truncate flex-shrink-0 max-w-[180px]">{entry.file.name}</span>
+                <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-page rounded-lg p-3">
+                  <span className="text-sm text-secondary truncate flex-shrink-0 max-w-[180px]">{entry.file.name}</span>
                   <input type="text" value={entry.title}
                     onChange={(e) => { const u = [...batchFiles]; u[i].title = e.target.value; u[i].useFilename = false; setBatchFiles(u); }}
                     placeholder="Title (optional)"
-                    className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none w-full sm:w-auto" />
+                    className="flex-1 px-3 py-1.5 border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none w-full sm:w-auto" />
                   <button onClick={() => setBatchFiles((prev) => prev.filter((_, idx) => idx !== i))}
-                    className="text-gray-400 hover:text-red-500 transition flex-shrink-0"><Minus className="w-4 h-4" /></button>
+                    className="text-muted hover:text-red-500 transition flex-shrink-0"><Minus className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
           )}
           {batchFiles.length > 0 && (
             <button onClick={handleBatchUpload} disabled={uploadLoading}
-              className="w-full sm:w-auto bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
+              className="w-full sm:w-auto bg-primary-btn text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary-btn-hover disabled:opacity-50 transition flex items-center justify-center gap-2">
               {uploadLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload All ({batchFiles.length})</>}
             </button>
           )}
@@ -289,41 +289,41 @@ export default function CommunicationsPage() {
       {/* Document List */}
       <div className="mt-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
-          <h2 className="font-medium text-gray-900">Documents ({total})</h2>
+          <h2 className="font-medium text-heading">Documents ({total})</h2>
           <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none">
+            className="px-3 py-1.5 border border-border-default rounded-lg text-sm bg-card focus:ring-2 focus:ring-accent outline-none">
             <option value="">All Types</option>
             {COMM_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
 
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by title or filename..."
-            className="w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none" />
+            className="w-full pl-9 pr-8 py-2 border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none" />
           {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
+            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-secondary"><X className="w-4 h-4" /></button>
           )}
-          {searchLoading && <Loader2 className="absolute right-8 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-500 animate-spin" />}
+          {searchLoading && <Loader2 className="absolute right-8 top-1/2 -translate-y-1/2 w-4 h-4 text-accent animate-spin" />}
         </div>
 
         <div className="space-y-2">
           {loading ? (
-            <div className="text-center py-8"><Loader2 className="w-6 h-6 text-brand-500 animate-spin mx-auto" /></div>
+            <div className="text-center py-8"><Loader2 className="w-6 h-6 text-accent animate-spin mx-auto" /></div>
           ) : docs.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center">
+            <p className="text-sm text-muted py-4 text-center">
               {searchQuery || typeFilter ? "No documents match your search" : "No communications uploaded yet"}
             </p>
           ) : (
             docs.map((doc) => (
-              <div key={doc.id} className="bg-white border border-gray-200 rounded-xl px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between">
+              <div key={doc.id} className="bg-card border border-border-default rounded-xl px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="text-gray-400 flex-shrink-0">{getTypeIcon(doc.communication_type)}</div>
+                  <div className="text-muted flex-shrink-0">{getTypeIcon(doc.communication_type)}</div>
                   <div className="min-w-0">
-                    <div className="font-medium text-sm text-gray-900 truncate">{doc.title || doc.filename}</div>
-                    <div className="text-xs text-gray-500 flex flex-wrap gap-x-2">
-                      <span className="bg-gray-100 px-1.5 py-0.5 rounded">{getTypeLabel(doc.communication_type)}</span>
+                    <div className="font-medium text-sm text-heading truncate">{doc.title || doc.filename}</div>
+                    <div className="text-xs text-muted flex flex-wrap gap-x-2">
+                      <span className="bg-surface px-1.5 py-0.5 rounded">{getTypeLabel(doc.communication_type)}</span>
                       <span className="hidden sm:inline">{doc.filename}</span>
                       {doc.page_count && <span>{doc.page_count} pages</span>}
                     </div>
@@ -332,13 +332,13 @@ export default function CommunicationsPage() {
                 <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
                   <button
                     onClick={() => router.push(`/staff/query?type=communications`)}
-                    className="text-gray-400 hover:text-brand-600 transition p-1"
+                    className="text-muted hover:text-accent transition p-1"
                     title="Query communications"
                   >
                     <MessageSquare className="w-4 h-4" />
                   </button>
                   <button onClick={() => handleDelete(doc.id, doc.title || doc.filename)}
-                    className="text-gray-400 hover:text-red-500 transition p-1" title="Delete">
+                    className="text-muted hover:text-red-500 transition p-1" title="Delete">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>

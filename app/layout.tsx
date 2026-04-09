@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { TenantProvider } from "@/lib/tenant-context";
 import { AuthProvider } from "@/lib/auth-context";
 import Auth0ProviderWrapper from "@/components/Auth0ProviderWrapper";
+import ThemeProvider from "@/components/ThemeProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,15 +19,17 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
         <body>
-        <Auth0ProviderWrapper>
-            <AuthProvider>
-                <TenantProvider>
-                    {children}
-                </TenantProvider>
-            </AuthProvider>
-        </Auth0ProviderWrapper>
+        <ThemeProvider>
+            <Auth0ProviderWrapper>
+                <AuthProvider>
+                    <TenantProvider>
+                        {children}
+                    </TenantProvider>
+                </AuthProvider>
+            </Auth0ProviderWrapper>
+        </ThemeProvider>
         </body>
         </html>
     );

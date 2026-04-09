@@ -63,7 +63,7 @@ export default function ImpersonationBanner() {
     };
 
     return (
-        <div className="bg-amber-500 text-gray-900 px-4 py-2 flex items-center justify-between text-sm font-medium z-50 relative">
+        <div className="bg-amber-500 text-heading px-4 py-2 flex items-center justify-between text-sm font-medium z-50 relative">
             <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />

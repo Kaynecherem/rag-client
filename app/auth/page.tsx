@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useTenant } from "@/lib/tenant-context";
 import { verifyPolicyholder, staffAuth0Login } from "@/lib/api";
 import { User, Building2, Loader2 } from "lucide-react";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface TenantOption {
   tenant_id: string;
@@ -30,6 +31,8 @@ function AuthPage() {
   const { loginStaff, loginPolicyholder, isAuthenticated, isStaff, isPolicyholder, hydrated } = useAuth();
   const { loginWithPopup, getAccessTokenSilently, user: auth0User, isAuthenticated: auth0Authenticated, getIdTokenClaims, isLoading: auth0Loading } = useAuth0();
   const { tenant, tenantId: resolvedTenantId, slug } = useTenant();
+  const { theme } = useTheme();
+  const logoSrc = theme === "dark" ? "/patch-premium-finance-logo-dark.svg" : "/patch-premium-finance-logo.svg";
 
   const [mode, setMode] = useState<"staff" | "policyholder">("staff");
   const [loading, setLoading] = useState(false);
@@ -243,40 +246,40 @@ function AuthPage() {
 
   if (!hydrated || auth0Loading) {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4]">
-          <div className="animate-pulse text-[#A7AAAA]">Loading...</div>
+        <div className="min-h-screen flex items-center justify-center bg-page">
+          <div className="animate-pulse text-muted">Loading...</div>
         </div>
     );
   }
 
   return (
-      <div className="min-h-screen bg-[#FAF8F4] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-page flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           {/* Logo — Patch Premium Finance */}
           <div className="text-center mb-8">
             <div className="mx-auto mb-4" style={{ height: '64px' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                  src="/patch-premium-finance-logo.svg"
+                  src={logoSrc}
                   alt="Patch Premium Finance"
                   style={{ height: '64px', width: 'auto' }}
                   className="mx-auto"
               />
             </div>
-            <p className="text-[#656B6B] mt-1 text-[15px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <p className="text-secondary mt-1 text-[15px] font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
               Policy Intelligence
             </p>
           </div>
 
           {/* ── TENANT PICKER (shown when multi-tenant) ── */}
           {tenantOptions && (
-              <div className="bg-white rounded-lg shadow-sm border border-[#E9EAEA] p-6 space-y-4">
+              <div className="bg-card rounded-lg shadow-sm border border-border-default p-6 space-y-4">
                 <div className="text-center space-y-1">
-                  <Building2 className="w-10 h-10 text-[#2C3030] mx-auto" />
-                  <h2 className="text-lg font-medium text-[#1A1A1A]">
+                  <Building2 className="w-10 h-10 text-heading mx-auto" />
+                  <h2 className="text-lg font-medium text-heading">
                     Select your agency
                   </h2>
-                  <p className="text-sm text-[#656B6B]">
+                  <p className="text-sm text-secondary">
                     Your account is linked to multiple agencies.
                   </p>
                 </div>
@@ -287,13 +290,13 @@ function AuthPage() {
                           key={t.tenant_id}
                           onClick={() => handleTenantSelect(t.tenant_id)}
                           disabled={loading}
-                          className="w-full flex items-center justify-between p-4 rounded-lg border border-[#E9EAEA] hover:border-[#2C3030] hover:bg-[#F1F1F1] transition-colors disabled:opacity-50"
+                          className="w-full flex items-center justify-between p-4 rounded-lg border border-border-default hover:border-heading hover:bg-surface transition-colors disabled:opacity-50"
                       >
                         <div className="text-left">
-                          <div className="font-medium text-[#1A1A1A]">{t.tenant_name}</div>
-                          <div className="text-xs text-[#656B6B] capitalize">Role: {t.role}</div>
+                          <div className="font-medium text-heading">{t.tenant_name}</div>
+                          <div className="text-xs text-secondary capitalize">Role: {t.role}</div>
                         </div>
-                        <svg className="w-5 h-5 text-[#A7AAAA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-5 h-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
@@ -306,7 +309,7 @@ function AuthPage() {
                       setPendingAccessToken(null);
                       setPendingEmail(null);
                     }}
-                    className="w-full text-sm text-[#656B6B] hover:text-[#1A1A1A]"
+                    className="w-full text-sm text-secondary hover:text-heading"
                 >
                   Cancel
                 </button>
@@ -323,13 +326,13 @@ function AuthPage() {
           {!tenantOptions && (
               <>
                 {/* Mode Toggle */}
-                <div className="flex bg-[#F1F1F1] rounded-lg p-1 mb-6">
+                <div className="flex bg-surface rounded-lg p-1 mb-6">
                   <button
                       onClick={() => { setMode("staff"); setError(""); }}
                       className={`flex-1 py-2.5 text-[15px] font-medium rounded-md transition ${
                           mode === "staff"
-                              ? "bg-white text-[#1A1A1A] shadow-sm"
-                              : "text-[#656B6B] hover:text-[#1A1A1A]"
+                              ? "bg-card text-heading shadow-sm"
+                              : "text-secondary hover:text-heading"
                       }`}
                   >
                     Staff login
@@ -338,8 +341,8 @@ function AuthPage() {
                       onClick={() => { setMode("policyholder"); setError(""); }}
                       className={`flex-1 py-2.5 text-[15px] font-medium rounded-md transition ${
                           mode === "policyholder"
-                              ? "bg-white text-[#1A1A1A] shadow-sm"
-                              : "text-[#656B6B] hover:text-[#1A1A1A]"
+                              ? "bg-card text-heading shadow-sm"
+                              : "text-secondary hover:text-heading"
                       }`}
                   >
                     Policyholder
@@ -347,18 +350,18 @@ function AuthPage() {
                 </div>
 
                 {/* Card */}
-                <div className="bg-white rounded-lg shadow-sm border border-[#E9EAEA] p-6">
+                <div className="bg-card rounded-lg shadow-sm border border-border-default p-6">
                   {mode === "staff" ? (
                       <div>
-                        <h2 className="text-lg font-medium text-[#1A1A1A] mb-2">Staff login</h2>
-                        <p className="text-sm text-[#656B6B] mb-6">
+                        <h2 className="text-lg font-medium text-heading mb-2">Staff login</h2>
+                        <p className="text-sm text-secondary mb-6">
                           Sign in with your organization credentials to manage policies and agency documents.
                         </p>
 
                         <button
                             onClick={handleStaffLogin}
                             disabled={loading}
-                            className="w-full flex items-center justify-center gap-2 bg-[#2C3030] text-white py-3 rounded-lg font-medium text-[15px] hover:bg-[#394040] disabled:opacity-50 transition min-h-[44px]"
+                            className="w-full flex items-center justify-center gap-2 bg-primary-btn text-white py-3 rounded-lg font-medium text-[15px] hover:bg-primary-btn-hover disabled:opacity-50 transition min-h-[44px]"
                         >
                           {loading ? (
                               <><Loader2 className="w-5 h-5 animate-spin" /> Signing in...</>
@@ -375,8 +378,8 @@ function AuthPage() {
                       </div>
                   ) : (
                       <form onSubmit={handlePolicyholderVerify}>
-                        <h2 className="text-lg font-medium text-[#1A1A1A] mb-2">Policy access</h2>
-                        <p className="text-sm text-[#656B6B] mb-6">
+                        <h2 className="text-lg font-medium text-heading mb-2">Policy access</h2>
+                        <p className="text-sm text-secondary mb-6">
                           Verify your identity to access your policy information.
                         </p>
 
@@ -384,7 +387,7 @@ function AuthPage() {
                           {/* Show tenant ID field only if not resolved from subdomain */}
                           {!resolvedTenantId && !slug && (
                               <div>
-                                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                                <label className="block text-sm font-medium text-heading mb-1">
                                   Agency code
                                 </label>
                                 <input
@@ -393,13 +396,13 @@ function AuthPage() {
                                     onChange={(e) => setTenantId(e.target.value)}
                                     placeholder="Your agency code"
                                     required
-                                    className="w-full px-4 py-3 border border-[#E9EAEA] rounded focus:border-[#1A1A1A] focus:ring-0 outline-none text-sm placeholder-[#A7AAAA]"
+                                    className="w-full px-4 py-3 bg-card border border-border-default rounded focus:border-heading focus:ring-0 outline-none text-sm placeholder-muted"
                                 />
                               </div>
                           )}
 
                           <div>
-                            <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                            <label className="block text-sm font-medium text-heading mb-1">
                               Policy number
                             </label>
                             <input
@@ -408,7 +411,7 @@ function AuthPage() {
                                 onChange={(e) => setPolicyNumber(e.target.value)}
                                 placeholder="e.g., POL-001"
                                 required
-                                className="w-full px-4 py-3 border border-[#E9EAEA] rounded focus:border-[#1A1A1A] focus:ring-0 outline-none text-sm placeholder-[#A7AAAA]"
+                                className="w-full px-4 py-3 bg-card border border-border-default rounded focus:border-heading focus:ring-0 outline-none text-sm placeholder-muted"
                             />
                           </div>
 
@@ -418,8 +421,8 @@ function AuthPage() {
                                 onClick={() => setVerifyBy("person")}
                                 className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm border transition min-h-[44px] ${
                                     verifyBy === "person"
-                                        ? "border-[#2C3030] bg-[#F1F1F1] text-[#1A1A1A]"
-                                        : "border-[#E9EAEA] text-[#656B6B] hover:border-[#A7AAAA]"
+                                        ? "border-heading bg-surface text-heading"
+                                        : "border-border-default text-secondary hover:border-muted"
                                 }`}
                             >
                               <User className="w-4 h-4" /> Person
@@ -429,8 +432,8 @@ function AuthPage() {
                                 onClick={() => setVerifyBy("company")}
                                 className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm border transition min-h-[44px] ${
                                     verifyBy === "company"
-                                        ? "border-[#2C3030] bg-[#F1F1F1] text-[#1A1A1A]"
-                                        : "border-[#E9EAEA] text-[#656B6B] hover:border-[#A7AAAA]"
+                                        ? "border-heading bg-surface text-heading"
+                                        : "border-border-default text-secondary hover:border-muted"
                                 }`}
                             >
                               <Building2 className="w-4 h-4" /> Company
@@ -439,7 +442,7 @@ function AuthPage() {
 
                           {verifyBy === "person" ? (
                               <div>
-                                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                                <label className="block text-sm font-medium text-heading mb-1">
                                   Last name
                                 </label>
                                 <input
@@ -448,12 +451,12 @@ function AuthPage() {
                                     onChange={(e) => setLastName(e.target.value)}
                                     placeholder="Your last name"
                                     required
-                                    className="w-full px-4 py-3 border border-[#E9EAEA] rounded focus:border-[#1A1A1A] focus:ring-0 outline-none text-sm placeholder-[#A7AAAA]"
+                                    className="w-full px-4 py-3 bg-card border border-border-default rounded focus:border-heading focus:ring-0 outline-none text-sm placeholder-muted"
                                 />
                               </div>
                           ) : (
                               <div>
-                                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                                <label className="block text-sm font-medium text-heading mb-1">
                                   Company name
                                 </label>
                                 <input
@@ -462,7 +465,7 @@ function AuthPage() {
                                     onChange={(e) => setCompanyName(e.target.value)}
                                     placeholder="Your company name"
                                     required
-                                    className="w-full px-4 py-3 border border-[#E9EAEA] rounded focus:border-[#1A1A1A] focus:ring-0 outline-none text-sm placeholder-[#A7AAAA]"
+                                    className="w-full px-4 py-3 bg-card border border-border-default rounded focus:border-heading focus:ring-0 outline-none text-sm placeholder-muted"
                                 />
                               </div>
                           )}
@@ -470,7 +473,7 @@ function AuthPage() {
                           <button
                               type="submit"
                               disabled={loading}
-                              className="w-full flex items-center justify-center gap-2 bg-[#2C3030] text-white py-3 rounded-lg font-medium text-[15px] hover:bg-[#394040] disabled:opacity-50 transition min-h-[44px]"
+                              className="w-full flex items-center justify-center gap-2 bg-primary-btn text-white py-3 rounded-lg font-medium text-[15px] hover:bg-primary-btn-hover disabled:opacity-50 transition min-h-[44px]"
                           >
                             {loading ? (
                                 <><Loader2 className="w-5 h-5 animate-spin" /> Verifying...</>
@@ -491,7 +494,7 @@ function AuthPage() {
               </>
           )}
 
-          <p className="text-xs text-[#A7AAAA] mt-6 text-center">
+          <p className="text-xs text-muted mt-6 text-center">
             Powered by Patch Premium Finance
           </p>
         </div>

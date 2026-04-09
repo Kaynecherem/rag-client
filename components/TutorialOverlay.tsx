@@ -55,15 +55,15 @@ export default function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden animate-fade-in">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-overlay/40 p-4">
+      <div className="bg-card rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden animate-fade-in">
         {/* Progress */}
         <div className="flex gap-1 px-6 pt-5">
           {STEPS.map((_, i) => (
             <div
               key={i}
               className={`h-1 flex-1 rounded-full transition-colors ${
-                i <= step ? "bg-brand-600" : "bg-gray-200"
+                i <= step ? "bg-primary-btn" : "bg-surface"
               }`}
             />
           ))}
@@ -72,12 +72,12 @@ export default function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
         {/* Content */}
         <div className="px-6 py-5">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center text-brand-600 flex-shrink-0">
+            <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center text-accent flex-shrink-0">
               {current.icon}
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 text-sm">{current.title}</h3>
-              <p className="text-sm text-gray-500 mt-1 leading-relaxed">{current.description}</p>
+              <h3 className="font-semibold text-heading text-sm">{current.title}</h3>
+              <p className="text-sm text-muted mt-1 leading-relaxed">{current.description}</p>
             </div>
           </div>
         </div>
@@ -86,17 +86,17 @@ export default function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
         <div className="px-6 pb-5 flex items-center justify-between">
           <button
             onClick={onComplete}
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
+            className="text-xs text-muted hover:text-secondary transition"
           >
             Skip tutorial
           </button>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-muted">
               {step + 1} of {STEPS.length}
             </span>
             <button
               onClick={handleNext}
-              className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition flex items-center gap-1"
+              className="bg-primary-btn text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-btn-hover transition flex items-center gap-1"
             >
               {isLast ? "Get Started" : "Next"}
               {!isLast && <ChevronRight className="w-3.5 h-3.5" />}

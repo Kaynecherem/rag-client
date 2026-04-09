@@ -196,15 +196,15 @@ export default function PoliciesPage() {
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto">
-      <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Policy Management</h1>
-      <p className="text-sm text-gray-500 mt-1">Upload, monitor, and manage insurance policy documents</p>
+      <h1 className="text-lg sm:text-xl font-semibold text-heading">Policy Management</h1>
+      <p className="text-sm text-muted mt-1">Upload, monitor, and manage insurance policy documents</p>
 
       {/* Upload Mode Toggle */}
       <div className="mt-4 flex gap-2">
         <button
           onClick={() => setUploadMode("single")}
           className={`px-3 py-1.5 text-sm rounded-lg transition ${
-            uploadMode === "single" ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            uploadMode === "single" ? "bg-primary-btn text-white" : "bg-surface text-secondary hover:bg-gray-200"
           }`}
         >
           Single Upload
@@ -212,7 +212,7 @@ export default function PoliciesPage() {
         <button
           onClick={() => setUploadMode("batch")}
           className={`px-3 py-1.5 text-sm rounded-lg transition ${
-            uploadMode === "batch" ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            uploadMode === "batch" ? "bg-primary-btn text-white" : "bg-surface text-secondary hover:bg-gray-200"
           }`}
         >
           Batch Upload
@@ -221,15 +221,15 @@ export default function PoliciesPage() {
 
       {/* Single Upload */}
       {uploadMode === "single" && (
-        <form onSubmit={handleUpload} className="mt-4 bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-          <h2 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Upload className="w-5 h-5 text-brand-600" /> Upload New Policy
+        <form onSubmit={handleUpload} className="mt-4 bg-card rounded-xl border border-border-default p-4 sm:p-5">
+          <h2 className="font-medium text-heading mb-4 flex items-center gap-2">
+            <Upload className="w-5 h-5 text-accent" /> Upload New Policy
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium text-gray-700">Policy Number</label>
-                <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+                <label className="block text-sm font-medium text-heading">Policy Number</label>
+                <label className="flex items-center gap-1.5 text-xs text-muted cursor-pointer">
                   <input
                     type="checkbox"
                     checked={useFilenameAsPolicy}
@@ -239,7 +239,7 @@ export default function PoliciesPage() {
                         setPolicyNumber(fileRef.current.files[0].name.replace(/\.[^/.]+$/, ""));
                       }
                     }}
-                    className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                    className="rounded border-border-default text-accent focus:ring-accent"
                   />
                   Use filename
                 </label>
@@ -250,11 +250,11 @@ export default function PoliciesPage() {
                 onChange={(e) => { setPolicyNumber(e.target.value); setUseFilenameAsPolicy(false); }}
                 placeholder="e.g. POL-2024-HO-004"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                className="w-full px-3 py-2 border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">PDF File</label>
+              <label className="block text-sm font-medium text-heading mb-1">PDF File</label>
               <input
                 ref={fileRef}
                 type="file"
@@ -265,7 +265,7 @@ export default function PoliciesPage() {
                     setPolicyNumber(fileRef.current.files[0].name.replace(/\.[^/.]+$/, ""));
                   }
                 }}
-                className="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
+                className="w-full text-sm text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-accent/10 file:text-accent hover:file:bg-brand-100"
               />
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function PoliciesPage() {
             <button
               type="submit"
               disabled={uploadLoading}
-              className="w-full sm:w-auto bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+              className="w-full sm:w-auto bg-primary-btn text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary-btn-hover disabled:opacity-50 transition flex items-center justify-center gap-2"
             >
               {uploadLoading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
@@ -287,17 +287,17 @@ export default function PoliciesPage() {
 
       {/* Batch Upload */}
       {uploadMode === "batch" && (
-        <div className="mt-4 bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-          <h2 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Upload className="w-5 h-5 text-brand-600" /> Batch Upload (up to 10)
+        <div className="mt-4 bg-card rounded-xl border border-border-default p-4 sm:p-5">
+          <h2 className="font-medium text-heading mb-4 flex items-center gap-2">
+            <Upload className="w-5 h-5 text-accent" /> Batch Upload (up to 10)
           </h2>
           <input ref={batchFileRef} type="file" accept=".pdf" multiple className="hidden" onChange={handleBatchFilesSelected} />
           <div className="flex items-center justify-between mb-3">
             <button onClick={handleBatchAdd} disabled={batchFiles.length >= 10}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition flex items-center gap-2 disabled:opacity-50">
+              className="px-4 py-2 bg-surface hover:bg-gray-200 text-heading text-sm rounded-lg transition flex items-center gap-2 disabled:opacity-50">
               <Plus className="w-4 h-4" /> Add PDF Files
             </button>
-            <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+            <label className="flex items-center gap-1.5 text-xs text-muted cursor-pointer">
               <input
                 type="checkbox"
                 checked={useBatchFilenames}
@@ -310,7 +310,7 @@ export default function PoliciesPage() {
                     })));
                   }
                 }}
-                className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                className="rounded border-border-default text-accent focus:ring-accent"
               />
               Use filenames as policy numbers
             </label>
@@ -318,14 +318,14 @@ export default function PoliciesPage() {
           {batchFiles.length > 0 && (
             <div className="space-y-2 mb-4">
               {batchFiles.map((entry, i) => (
-                <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-gray-50 rounded-lg p-3">
-                  <span className="text-sm text-gray-600 truncate flex-shrink-0 max-w-[200px]">{entry.file.name}</span>
+                <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-page rounded-lg p-3">
+                  <span className="text-sm text-secondary truncate flex-shrink-0 max-w-[200px]">{entry.file.name}</span>
                   <input type="text" value={entry.policyNumber}
                     onChange={(e) => { const u = [...batchFiles]; u[i].policyNumber = e.target.value; setBatchFiles(u); setUseBatchFilenames(false); }}
                     placeholder="Policy number"
-                    className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none w-full sm:w-auto" />
+                    className="flex-1 px-3 py-1.5 border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none w-full sm:w-auto" />
                   <button onClick={() => setBatchFiles((prev) => prev.filter((_, idx) => idx !== i))}
-                    className="text-gray-400 hover:text-red-500 transition flex-shrink-0">
+                    className="text-muted hover:text-red-500 transition flex-shrink-0">
                     <Minus className="w-4 h-4" />
                   </button>
                 </div>
@@ -334,7 +334,7 @@ export default function PoliciesPage() {
           )}
           {batchFiles.length > 0 && (
             <button onClick={handleBatchUpload} disabled={uploadLoading}
-              className="w-full sm:w-auto bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
+              className="w-full sm:w-auto bg-primary-btn text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary-btn-hover disabled:opacity-50 transition flex items-center justify-center gap-2">
               {uploadLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload All ({batchFiles.length})</>}
             </button>
           )}
@@ -360,16 +360,16 @@ export default function PoliciesPage() {
       {/* Search Box */}
       <div className="mt-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-medium text-gray-900">Indexed Policies</h2>
-          <span className="text-xs text-gray-400">{searchResults.length} policies</span>
+          <h2 className="font-medium text-heading">Indexed Policies</h2>
+          <span className="text-xs text-muted">{searchResults.length} policies</span>
         </div>
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by policy number..."
-            className="w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none" />
+            className="w-full pl-9 pr-8 py-2 border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none" />
           {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-secondary">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -381,17 +381,17 @@ export default function PoliciesPage() {
           {loading ? (
             <div className="text-center py-8"><Loader2 className="w-6 h-6 text-brand-500 animate-spin mx-auto" /></div>
           ) : searchResults.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center">
+            <p className="text-sm text-muted py-4 text-center">
               {searchQuery ? "No policies match your search" : "No policies found"}
             </p>
           ) : (
             searchResults.map((p) => (
-              <div key={p.number} className="bg-white border border-gray-200 rounded-xl px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between">
+              <div key={p.number} className="bg-card border border-border-default rounded-xl px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3 min-w-0">
-                  <FileText className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  <FileText className="w-5 h-5 text-muted flex-shrink-0" />
                   <div className="min-w-0">
-                    <div className="font-medium text-sm text-gray-900 truncate">{p.number}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="font-medium text-sm text-heading truncate">{p.number}</div>
+                    <div className="text-xs text-muted">
                       {p.available ? `${p.chunkCount} chunks indexed` : "Not indexed"}
                       {p.filename && <span className="hidden sm:inline"> · {p.filename}</span>}
                     </div>
@@ -406,7 +406,7 @@ export default function PoliciesPage() {
                   {p.available && (
                     <button
                       onClick={() => router.push(`/staff/query?policy=${encodeURIComponent(p.number)}`)}
-                      className="text-gray-400 hover:text-brand-600 transition p-1"
+                      className="text-muted hover:text-accent transition p-1"
                       title="Ask questions about this policy"
                     >
                       <MessageSquare className="w-4 h-4" />
@@ -414,7 +414,7 @@ export default function PoliciesPage() {
                   )}
                   <button
                     onClick={() => handleDelete(p.number)}
-                    className="text-gray-400 hover:text-red-500 transition p-1"
+                    className="text-muted hover:text-red-500 transition p-1"
                     title="Delete policy"
                   >
                     <Trash2 className="w-4 h-4" />
