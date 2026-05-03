@@ -218,7 +218,7 @@ function AuthPage() {
   const handlePolicyholderVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!tenantId.trim() && !slug) {
-      setError("Agency code is required. Ask your insurance provider for it.");
+      setError("Please access this page from your agency's URL.");
       return;
     }
 
@@ -384,23 +384,6 @@ function AuthPage() {
                         </p>
 
                         <div className="space-y-4">
-                          {/* Show tenant ID field only if not resolved from subdomain */}
-                          {!resolvedTenantId && !slug && (
-                              <div>
-                                <label className="block text-sm font-medium text-heading mb-1">
-                                  Agency code
-                                </label>
-                                <input
-                                    type="text"
-                                    value={tenantId}
-                                    onChange={(e) => setTenantId(e.target.value)}
-                                    placeholder="Your agency code"
-                                    required
-                                    className="w-full px-4 py-3 bg-card border border-border-default rounded focus:border-heading focus:ring-0 outline-none text-sm placeholder-muted"
-                                />
-                              </div>
-                          )}
-
                           <div>
                             <label className="block text-sm font-medium text-heading mb-1">
                               Policy number
